@@ -1,1 +1,3 @@
+abstract.tex
 sec_introduction.tex
+figures/guide_star_schematic/guide_star_schematic.png
