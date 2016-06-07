@@ -1,4 +1,1518 @@
+\maketitle
 \section{Introduction}
+
+Single conjugate adaptive optics (AO) systems on large (8-10 m)
+ground-based telescopes, such as at the W.~M.~Keck observatory,
+provide some of the sharpest infrared astronomical images. 
+High-resolution AO images and spectroscopy have produced 
+notable scientific results, including precise measurements of the mass
+and distance of the supermassive black hole at the Galactic Center. 
+AO images of stars orbiting close to this supermassive black
+hole have the potential to uniquely test general relativity in the strong
+gravity regime. However, the potential of current AO systems has not been
+fully exploited in terms of astrometric and photometric precision due
+to our incomplete knowledge of the temporal and spatial variations in
+the point spread function (PSF). 
+
+The current Keck II AO system is equipped with a laser guide star 
+
+
+Motivated by the need for improved
+astrometry and photometry on Galactic Center observations taken by the
+Keck telescopes' AO systems, we have developed new algorithms bundeled
+in the AIROPA package ({\it A}nisoplanatic and {\it I}nstrumental {\it
+  R}econstruction of {\it O}ff-axis {\it P}SFs for {\it A}O) to
+account for the spatial and temporal variations of the PSF. 
+In this paper, we describe the 
+
 
 Fubar... this is the introduction. \cite{Britton:2006}
 
+\section{Point Spread Function Formulation}
+\label{sec:psfform}
+
+Consider an adaptive optics system performing tilt sensing and
+compensation using light from one object and high order sensing and
+compensation using light from a second object.  A telescope is used to
+form an image of a third object: the science target.  These objects
+may be at arbitrary range from the telescope and at arbitrary angular
+offsets with respect to each other.  As a concrete example, consider a
+configuration of sources employed in a laser guide star adaptive
+optics system.  In such a system, both the object used for tilt
+sensing and the science target are effectively at infinite range.
+Figure \ref{geo} displays a possible geometrical configuration for
+such an observation.
+
+% \myFigureII
+% {geo}
+% {{figs/geo/sources}{a) Geometry}}
+% {{figs/geo/skychart}{b) Sky Chart}}
+% {{6.5cm}{.33\textwidth}}
+% {
+% {Sample Observing Geometry}
+% {Figures \ref{geo}a and \ref{geo}b show a possible geometrical
+%   configuration for the tip tilt, target, and laser.  Light from these
+%   targets traverses atmospheric turbulence along different paths,
+%   thereby acquiring differential wavefront aberrations.  This is the
+%   effect of anisoplanatism, which arises from the finite vertical
+%   extent of atmospheric turbulence. Angular anisoplanatism represents
+%   the difference between the wavefront aberrations from sources at 
+%   different locations in the field of view, while focal anisoplanatism
+%   represents the difference in wavefront aberrations from sources at
+%   different ranges from the telescope aperture.  Both types of
+%   anisoplanatism are present in this geometrical configuration.}}
+
+Light from sources such as those shown in Figure \ref{geo} descend
+through columns of atmosphere to arrive at the aperture of the
+telescope.  During their passage through the atmosphere, wavefronts
+acquire phase aberrations due to index of refraction fluctuations in
+air arising from turbulence.  These wavefronts arrive at the
+telescope, where they are sensed by detectors.  The wavefront from the
+tip tilt guide star is sensed by a tracker to determine wavefront
+tilt, while that from the laser is sensed by a wavefront sensor to
+determine high order wavefront aberrations.  
+
+The adaptive optics system applies compensation based on these tip
+tilt and laser wavefront measurements using fast steering and
+deformable mirrors conjugated to the pupil plane.  Because these
+mirrors are conjugated in this way, the correction is uniform
+throughout the field.  However, the wavefront phase errors are not
+uniform throughout the field due to anisoplanatism.  Consequently,
+residual phase aberrations are present in the measured target
+wavefront, and these errors depend on the location of the target with
+respect to the tip tilt and laser sources.
+
+To quantify this description, we may write the residual wavefront
+phase error of the target as
+\begin{eqnarray}\label{phdiff}
+\Delta\phi_{\rm trg}\left(\boldsymbol{r}\right) & = & \phi_{\rm trg}\left(\boldsymbol{r}\right) - \phi^{T}_{\rm ttgs}\left(\boldsymbol{r}\right) - 
+\left[\phi_{\rm lgs}\left(\boldsymbol{r}\right) - \phi^{T}_{\rm lgs}\left(\boldsymbol{r}\right)\right] + \phi_{\rm ao}\left(\boldsymbol{r}\right) + 
+\phi_{\rm inst,trg}\left(\boldsymbol{r}\right) \\
+& = & \phi_{\rm apl}\left(\boldsymbol{r}\right) + \phi_{\rm ao}\left(\boldsymbol{r}\right)  + \phi_{\rm inst,trg}\left(\boldsymbol{r}\right) \nonumber
+\end{eqnarray}
+To be explicit, the following definitions are introduced:
+\begin{equation}\label{phidefs}
+\begin{aligned}
+\Delta\phi_{\rm trg}\left(\boldsymbol{r}\right)  \quad & \quad  {\rm Residual\;piston\;removed\;wavefront\;phase\;of\;target} \\
+\phi_{\rm trg}\left(\boldsymbol{r}\right)  \quad & \quad  {\rm Piston\;removed\;wavefront\;phase\;of\;target}  \\
+\phi^{T}_{\rm trg}\left(\boldsymbol{r}\right)  \quad & \quad  {\rm Wavefront\;tilt\;of\;target}  \\
+\phi^{T}_{\rm ttgs}\left(\boldsymbol{r}\right)  \quad & \quad  {\rm Wavefront\;tilt\;of\;tip\;tilt\;source}  \\
+\phi_{\rm lgs}\left(\boldsymbol{r}\right)  \quad & \quad  {\rm Piston\;removed\;wavefront\;phase\;of\;laser\;guide\;star}  \\
+\phi^{T}_{\rm lgs}\left(\boldsymbol{r}\right)  \quad & \quad  {\rm Wavefront\;tilt\;of\;laser\;guide\;star}  \\
+\phi_{\rm ao}\left(\boldsymbol{r}\right)  \quad & \quad  {\rm Residual\;piston\;removed\;wavefront\;phase\;from\;AO\;system}  \\
+\phi_{\rm inst,trg}\left(\boldsymbol{r}\right)  \quad & \quad  {\rm Piston\;removed\;wavefront\;phase\;from\;instrument\;in\;target\;direction}  \\
+\phi_{\rm apl}\left(\boldsymbol{r}\right)  \quad & \quad  \phi_{\rm trg}\left(\boldsymbol{r}\right) - \phi^{T}_{\rm ttgs}\left(\boldsymbol{r}\right) - 
+\left[\phi_{\rm lgs}\left(\boldsymbol{r}\right) - \phi^{T}_{\rm lgs}\left(\boldsymbol{r}\right)\right]
+\end{aligned}
+\end{equation}
+Each of these terms carries a dependence on position $\boldsymbol{r}$
+in the telescope pupil plane.  The piston removed wavefront phase is
+employed in these expressions, as the telescope is not sensitive to
+atmospheric piston.  Scintillation is neglected in this analysis, as
+it is a small effect for nighttime turbulence profiles at good
+astronomical sites.
+
+The term $\phi_{\rm ao}\left(\boldsymbol{r}\right)$ in Equation
+\ref{phidefs} represents the residual piston removed wavefront phase
+error arising from the inability of the adaptive optics system to
+perfectly measure and compensate the wavefront.  This phase error
+encompasses hardware effects associated with measuring and applying
+the tilt to the fast steering mirror and with measuring and applying
+the high order wavefront to the deformable mirror.  Consequently, the
+phase error $\phi_{\rm ao}\left(\boldsymbol{r}\right)$ encompasses
+measurement, fitting, and servo error terms.  This phase error does
+not include the effects of angular and focal anisoplanatism, which
+are broken out explicitly in the other terms in Equation
+\ref{phidefs}.
+
+The term $\phi_{\rm inst,trg}\left(\boldsymbol{r}\right)$ in Equation
+\ref{phidefs} represents wavefront error introduced by the
+instrumentation.  This term is field dependent, and is distinct from
+the residual wavefront error $\phi_{\rm
+  ao}\left(\boldsymbol{r}\right)$ that arises from the deformable
+mirror conjugated to the pupil plane and is hence field independent.
+Consequently, the term in Equation \ref{phdiff} is interpreted as the
+instrumental wavefront error in the direction of the target.  This
+term is assumed to be time independent, as it arises from static
+optical elements in the system that are conjugated to locations other
+than the pupil plane.  
+
+Equation \ref{phdiff} represents the residual wavefront phase error
+$\Delta\phi_{\rm trg}\left(\boldsymbol{r}\right)$ that would exist at
+a particular instant in time.  As wind convects turbulence over the
+telescope aperture, the telescope receives a succession of random
+realizations of the wavefront phase.  While the adaptive optics system
+applies compensation in the short exposure limit, the cameras used to
+acquire science images expose for timescales that are long compared to
+the temporal decorrelation time.  Consequently, predictions for the
+long exposure point spread function formed via ensemble averaging are
+of relevance to observational astronomy.
+
+To formulate the long exposure point spread function, start with the
+definition of the ensemble averaged phase structure function in the
+pupil plane.
+\begin{equation}
+\label{strfn_def}
+D_{\phi}(\boldsymbol{r}_{1},\boldsymbol{r}_{2})  = 
+\left\langle \left\{\phi\left(\boldsymbol{r}_{1}\right) - 
+\phi\left(\boldsymbol{r}_{2}\right)\right\}^{2}\right\rangle
+\end{equation}
+This structure function may be formed for any of the quantities
+defined in Equation \ref{phidefs}.  The structure function associated
+with the residual phase errors in the target wavefront may be written
+\begin{equation}\label{lgsstrfn}
+D_{\Delta\phi_{\rm trg}}(\boldsymbol{r}_{1},\boldsymbol{r}_{2}) = 
+D_{\phi_{\rm apl}}(\boldsymbol{r}_{1},\boldsymbol{r}_{2}) 
++ D_{\phi_{\rm ao}}(\boldsymbol{r}_{1},\boldsymbol{r}_{2}) 
++ D_{\phi_{\rm inst,trg}}(\boldsymbol{r}_{1},\boldsymbol{r}_{2}) 
+\end{equation}
+This equation assumes that the anisoplanatic errors $\phi_{\rm
+  apl}\left(\boldsymbol{r}\right)$ and residual errors from the
+adaptive optics system $\phi_{\rm ao}\left(\boldsymbol{r}\right)$ are
+statistically uncorrelated.  The instrumental errors $\phi_{\rm
+  inst,trg}\left(\boldsymbol{r}\right)$ are assumed static, so that they
+factor out of the ensemble average.
+
+The long exposure optical transfer function of the target
+$OTF_{trg}(\boldsymbol{r})$ may be written in terms of the
+exponentiated structure function as
+\begin{equation}\label{lgsotf}
+\begin{aligned}
+OTF_{\rm trg}(\boldsymbol{r}) = & \int d\boldsymbol{s} W(\boldsymbol{s}/R)W((\boldsymbol{r}+\boldsymbol{s})/R) \\
+&
+\exp{\left\{-{1 \over 2}\left[
+D_{\rm apl}(\boldsymbol{s},\boldsymbol{r} + \boldsymbol{s}) + 
+D_{\rm \phi_{ao}}(\boldsymbol{s},\boldsymbol{r} + \boldsymbol{s})+ 
+D_{\rm \phi_{inst,trg}}(\boldsymbol{s},\boldsymbol{r} + \boldsymbol{s})\right]\right\}}
+\end{aligned}
+\end{equation}
+where the integration is carried out over the pupil plane, $R$ is the
+radius of the telescope aperture, and the pupil function
+$W\left(\boldsymbol{\rho}\right)$ is defined as
+\begin{equation}\label{pupileqn}
+W\left(\boldsymbol{\rho}\right) = 
+\left\{
+\begin{aligned}
+1 & \quad \left\vert \rho \right\vert \le 1 \\
+0 & \quad \left\vert \rho \right\vert > 1 \\
+\end{aligned}
+\right.
+\end{equation}
+Finally, the long exposure point spread function for the target may be
+formed via Fourier transformation of the long exposure optical
+transfer function $OTF_{trg}(\boldsymbol{r})$.
+
+Computing the optical transfer function in Equation \ref{lgsotf}
+requires evaluation of the structure functions $D_{\rm
+  apl}(\boldsymbol{s},\boldsymbol{r} + \boldsymbol{s})$, $D_{\rm
+  \phi_{ao}}(\boldsymbol{s},\boldsymbol{r} + \boldsymbol{s})$ and
+$D_{\rm \phi_{inst,trg}}(\boldsymbol{s},\boldsymbol{r} + \boldsymbol{s})$ as
+a function of the pupil plane coordinates $\boldsymbol{r}$ and
+$\boldsymbol{s}$.  In the limiting case in which the same natural
+guide star is used for both tip tilt and high order phase
+measurements, it was shown that the anisoplanatic structure function
+is stationary\cite{2006PASP..118..885B}.
+\begin{equation}
+D^{\rm NGS}_{\rm apl}(\boldsymbol{r}_{1},\boldsymbol{r}_{2}) = 
+D^{\rm NGS}_{\rm apl}(\boldsymbol{r}_{1} - \boldsymbol{r}_{2}) 
+\end{equation}
+In this limiting case, the optical transfer function may be written 
+\begin{equation}\label{ngsotf}
+\begin{aligned}
+OTF^{NGS}_{\rm trg}(\boldsymbol{r}) = 
+& \exp{\left\{-{1 \over 2}\left[D^{NGS}_{\rm apl}(\boldsymbol{r})\right]\right\}}  \\
+& \int d\boldsymbol{s} W(\boldsymbol{s}/R)W((\boldsymbol{r}+\boldsymbol{s})/R) 
+\exp{\left\{-{1 \over 2}\left[
+D_{\rm \phi_{ao}}(\boldsymbol{s},\boldsymbol{r} + \boldsymbol{s}) + 
+D_{\rm \phi_{inst,trg}}(\boldsymbol{s},\boldsymbol{r} + \boldsymbol{s})
+\right]\right\}}
+\end{aligned}
+\end{equation}
+This property permits factors the anisoplanatic structure function
+from the remaining structure function terms in the calculation of the
+optical transfer function.  If one assumes that the differential
+instrumental aberrations between the guide star $\phi_{\rm inst,
+  gs}\left(\boldsymbol{r}\right)$ and the target $\phi_{\rm
+  inst,trg}\left(\boldsymbol{r}\right)$ are small, one may apply the
+model
+\begin{equation}\label{ngsapproxotf}
+\begin{aligned}
+OTF^{NGS}_{\rm trg}(\boldsymbol{r}) \approx
+& \exp{\left\{-{1 \over 2}\left[D^{NGS}_{\rm apl}(\boldsymbol{r})\right]\right\}}  \\
+& \int d\boldsymbol{s} W(\boldsymbol{s}/R)W((\boldsymbol{r}+\boldsymbol{s})/R) 
+\exp{\left\{-{1 \over 2}\left[
+D_{\rm \phi_{ao}}(\boldsymbol{s},\boldsymbol{r} + \boldsymbol{s}) + 
+D_{\rm \phi_{inst,gs}}(\boldsymbol{s},\boldsymbol{r} + \boldsymbol{s})
+\right]\right\}}
+\end{aligned}
+\end{equation}
+The term in the integrand on the right hand side of this equation is
+simply the guide star optical transfer function, which may be measured
+directly from an observation.  This may be combined with a model of
+$D^{\rm NGS}_{\rm apl}(\boldsymbol{r}_{1} - \boldsymbol{r}_{2})$ to
+predict the off-axis point spread function.  Such an experiment was
+conducted on the Hale 5m at Palomar Observatory
+\cite{2006PASP..118..885B}, and demonstrated predictions of the
+companion Strehl ratio accurate to 1\% at both $\lambda=1.65 \mu$m and
+$\lambda=2.12 \mu$m.  For the particular telescope, adaptive optics
+system, and near-infrared camera employed in this experiment, the
+assumption $\phi_{\rm inst, gs}\left(\boldsymbol{r}\right) \approx
+\phi_{\rm inst,trg}\left(\boldsymbol{r}\right)$ did not significantly
+impact the accuracy of the prediction of $OTF^{NGS}_{\rm
+  trg}(\boldsymbol{r})$.
+
+Unfortunately, the anisoplanatic structure function in Equation
+\ref{lgsstrfn} does not manifest the property of stationarity for a
+laser guide star adaptive optics system.  Consequently, the optical
+transfer function cannot be factored as shown in Equation
+\ref{ngsotf}.  Despite this complication, there are approaches that
+will advance our understanding of the point spread function delivered
+by a laser guide star adaptive optics system.  First, one may assume
+perfect adaptive optics compensation and no instrumental error, so
+that $\phi_{\rm ao}\left(\boldsymbol{r}\right) = \phi_{\rm
+  inst,trg}\left(\boldsymbol{r}\right) = 0$.  This assumption permits
+calculation of the impact of anisoplanatism on the optical transfer
+function and hence on the point spread function. This in and of itself
+can provide significant insight, as the point spread function depends
+strongly on the source geometry, aperture diameter, turbulence
+profile, and zenith angle.  Under this assumption
+\begin{equation}\label{lgsotfa}
+\begin{aligned}
+OTF^{LGS}_{\rm trg}(\boldsymbol{r}) = 
+\int d\boldsymbol{s} W(\boldsymbol{s}/R)W((\boldsymbol{r}+\boldsymbol{s})/R) 
+\exp{\left\{-{1 \over 2}\left[
+D_{\rm \phi_{apl}}(\boldsymbol{s},\boldsymbol{r} + \boldsymbol{s})\right]\right\}}
+\end{aligned}
+\end{equation}
+
+A second possible approach lies in measuring the structure functions
+$D_{\rm \phi_{ao}}(\boldsymbol{s},\boldsymbol{r} + \boldsymbol{s})$
+and $D_{\rm \phi_{inst,gs}}(\boldsymbol{s},\boldsymbol{r} +
+\boldsymbol{s}$ and using the measured values directly in Equation
+\ref{lgsotf}.  The static, field dependent instrumental wavefront
+error may be measured using a technique such as phase diversity.  The
+structure function may then be formed by brute force numerical
+calculation via
+\begin{equation}
+\label{strfn_inst}
+D_{\rm \phi_{inst,trg}}(\boldsymbol{r}_{1},\boldsymbol{r}_{2})  = 
+\left\langle \left\{\phi_{\rm inst,trg}\left(\boldsymbol{r}_{1}\right) - 
+\phi_{\rm inst,trg}\left(\boldsymbol{r}_{2}\right)\right\}^{2}\right\rangle
+\end{equation}
+Similarly, the statistical properties of $\phi_{\rm
+  ao}\left(\boldsymbol{r}\right)$ may be characterized via modelling
+of the adaptive optics system.  Such a characterization would involve
+understanding the contribution to the structure function $D_{\rm
+  \phi_{ao}}(\boldsymbol{r}_{1},\boldsymbol{r}_{2})$ from measurement,
+servo and fitting errors for specific hardware and under specific
+observing conditions.  For example, statistical properties of high
+order fitting error are determined by the turbulence profile and
+actuator pitch on the deformable mirror.  Similarly, statistical
+properties of high order measurement error are dictated by the
+geometry of the wavefront sensor, noise and diffusion properties of
+the wavefront sensor detector, and by the source brightness.  Finally,
+statistical properties of high order servo error are dictated by the
+turbulence and wind profiles and by the latency in the real time
+controller.  If the four dimensional structure function $D_{\rm
+  \phi_{ao}}(\boldsymbol{r}_{1},\boldsymbol{r}_{2})$ may be modelled
+successfully, then the optical transfer function may be computed
+directly from Equation \ref{lgsotf}.  Modelling of $D_{\rm
+  \phi_{ao}}(\boldsymbol{r}_{1},\boldsymbol{r}_{2})$ is currently
+being pursued in a parallel effort funded through the NSF ATI program.
+The results of this modelling may demonstrate that $D_{\rm
+  \phi_{ao}}(\boldsymbol{r}_{1},\boldsymbol{r}_{2})$ is nearly
+stationary.  This might be argued based on the fact that fitting,
+servo and measurement errors tend to decorrelate at separations of a
+single subaperture, and do so uniformly over the pupil plane.  This
+leads to structure functions that are stationary.  Were this
+assumption to hold, one could write Equation \ref{lgsotf} as
+\begin{equation}\label{lgsotfb}
+\begin{aligned}
+OTF^{LGS}_{\rm trg}(\boldsymbol{r}) = 
+& \exp{\left\{-{1 \over 2}\left[D_{\rm \phi_{\rm ao}}(\boldsymbol{r})\right]\right\}}  \\
+& \int d\boldsymbol{s} W(\boldsymbol{s}/R)W((\boldsymbol{r}+\boldsymbol{s})/R) 
+\exp{\left\{-{1 \over 2}\left[
+D_{\rm \phi_{apl}}(\boldsymbol{s},\boldsymbol{r} + \boldsymbol{s}) +
+D_{\rm \phi_{inst,trg}}(\boldsymbol{s},\boldsymbol{r} + \boldsymbol{s})
+\right]\right\}}
+\end{aligned}
+\end{equation}
+Naturally this stationarity assumption must be validated against
+performance of real hardware, and its validity is dictated by the
+modelling accuracy required for the astronomical application.  This
+requirement is in itself an open question for Keck LGS observations of
+the Galactic Center, and is also currently being addressed through the
+current funding effort.  
+
+Finally, one could postulate a model that assumes the instrumental
+structure function is stationary, so that
+\begin{equation}\label{lgsotfc}
+\begin{aligned}
+OTF^{LGS}_{\rm trg}(\boldsymbol{r}) = 
+& \exp{\left\{-{1 \over 2}\left[D_{\rm \phi_{\rm ao}}(\boldsymbol{r})\right]\right\}} 
+\exp{\left\{-{1 \over 2}\left[D_{\rm \phi_{\rm inst,trg}}(\boldsymbol{r})\right]\right\}}  \\
+& \int d\boldsymbol{s} W(\boldsymbol{s}/R)W((\boldsymbol{r}+\boldsymbol{s})/R) 
+\exp{\left\{-{1 \over 2}\left[
+D_{\rm \phi_{apl}}(\boldsymbol{s},\boldsymbol{r} + \boldsymbol{s})
+\right]\right\}}
+\end{aligned}
+\end{equation}
+This approximation would be suitable when $\phi_{\rm
+  inst,trg}\left(\boldsymbol{r}\right)\ll\phi_{\rm
+  aniso}\left(\boldsymbol{r}\right)$.
+
+The validity of the approximations in Equations \ref{lgsotfa},
+\ref{lgsotfb} and \ref{lgsotfc} to the model in Equation \ref{lgsotf}
+will depend signficantly on the character of the adaptive optics
+system, the optical properties of the instrumentation, and the
+importance of these terms relative to the degree of anisoplanatism
+inherent in the observational scenario.  The importance of
+anisoplanatism itself depends on many factors: the distribution of the
+sources with respect to the laser and tip tilt guide star, the
+turbulence profile, zenith angle, observing wavelength, and aperture
+diameter.  The state of our knowledge regarding $D_{\rm
+  \phi_{ao}}(\boldsymbol{s},\boldsymbol{r} + \boldsymbol{s})$ and
+$D_{\rm \phi_{inst,trg}}(\boldsymbol{s},\boldsymbol{r} +
+\boldsymbol{s})$ at Keck Observatory is currently evolving.  This
+report presents the methodology to compute $D_{\rm
+  \phi_{aniso}}(\boldsymbol{s},\boldsymbol{r})$.  Knowledge of each of
+these quantities is necessary to formulate the prediction of
+$OTF^{LGS}_{\rm trg}(\boldsymbol{r})$ in Equation \ref{lgsotf}, or to
+utilize the approximations in Equations \ref{lgsotfa}, \ref{lgsotfb}
+and \ref{lgsotfc}.
+
+Proceeding along this line of inquiry, the anisoplanatic structure
+function may be expressed in terms of the quantities defined in
+Equation \ref{phidefs} as
+\begin{equation}\label{lgsstrfnexpansion}
+\begin{split}
+D_{\phi_{\rm apl}}(\boldsymbol{r}_{1},\boldsymbol{r}_{2}) & =
+\left\langle \left\{\phi_{\rm apl}\left(\boldsymbol{r}_{1}\right) - 
+\phi_{\rm apl}\left(\boldsymbol{r}_{2}\right)\right\}^{2}\right\rangle \\
+& 
+=\left\langle \left\{
+\left[\phi_{\rm trg}\left(\boldsymbol{r}_{1}\right) - \phi^{T}_{\rm ttgs}\left(\boldsymbol{r}_{1}\right) - 
+\phi_{\rm lgs}\left(\boldsymbol{r}_{1}\right) + \phi^{T}_{\rm lgs}\left(\boldsymbol{r}_{1}\right)\right] -
+\vphantom{\left\langle\left\{\right\}^{2}\right\rangle}
+\right.
+\right.
+\\
+& \quad
+\left.
+\left.
+\left[\phi_{\rm trg}\left(\boldsymbol{r}_{2}\right) - \phi^{T}_{\rm ttgs}\left(\boldsymbol{r}_{2}\right) - 
+\phi_{\rm lgs}\left(\boldsymbol{r}_{2}\right) + \phi^{T}_{\rm lgs}\left(\boldsymbol{r}_{2}\right)\right]
+\right\}^{2}\right\rangle  
+\end{split}
+\end{equation}
+This expression may be written as the sum of 36 two-point phase
+covariance functions.  For example, the term $\left\langle\phi_{\rm
+  trg}\left(\boldsymbol{r}_{1}\right)\phi_{\rm
+  trg}\left(\boldsymbol{r}_{2}\right)\right\rangle$ represents the
+target piston-removed wavefront phase covariance.  For the special
+case $\boldsymbol{r}_{1}=\boldsymbol{r}_{2}\equiv\boldsymbol{r}$, this
+term simplifies to $\left\langle \left\{\phi_{\rm
+  trg}\left(\boldsymbol{r}\right)\right\}^{2}\right\rangle$,
+representing the target piston-removed wavefront phase variance as a
+function of the pupil plane coordinate $\boldsymbol{r}$.  As a
+concrete example of the utility of this function, we could measure the
+piston-removed wavefront phase using a Shack Hartmann sensor and
+compute the variance at each subaperture in the pupil plane.  The
+function $\left\langle\left\{\phi_{\rm
+  trg}\left(\boldsymbol{r}\right)^{2}\right\}\right\rangle$ would represent
+the Komolgorov prediction corresponding to our measurement.
+
+\section{Two-Point Covariance Functions}
+\label{sec:covariance}
+
+The key elements required for the prediction of the structure function
+in Equation \ref{lgsstrfnexpansion} and hence the optical transfer
+function in Equation \ref{lgsotfa} are the two-point covariance
+functions that appear in Equation \ref{lgsstrfnexpansion}.  The
+following three such functions are required to compute the structure
+function.
+\begin{equation}\label{tpcf}
+\begin{aligned}
+\left\langle \phi_{a}\left(\boldsymbol{r}_{1}\right) \phi_{b}\left(\boldsymbol{r}_{2}\right) \right\rangle &\quad\quad\quad {\rm Piston\;removed\;phase\;covariance} \\
+\left\langle \phi^{T}_{a}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{b}\left(\boldsymbol{r}_{2}\right) \right\rangle &\quad\quad\quad {\rm Tilt\;phase\;covariance} \\
+\left\langle \phi_{a}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{b}\left(\boldsymbol{r}_{2}\right) \right\rangle &\quad\quad\quad {\rm Piston\;removed\;/\;tilt\;cross\;covariance} \\
+\end{aligned}
+\end{equation}
+In this expression the subscripts $a$ and $b$ label the two sources,
+while the vectors $\boldsymbol{r}_{1}$ and $\boldsymbol{r}_{2}$
+represent coordinates in the telescope aperture.  This section
+sketches the derivation of this quantity assuming a Komolgorov
+turbulence spectrum.  This derivation appears in
+Tyler\cite{1994JOSAA..11..409T}, and is outlined here for
+completeness.  A complementary approach appears in Sasiela
+\cite{sasiela2007electromagnetic}.
+
+Wavefront phase aberrations arise from the passage of light through
+the atmosphere as this light encounters variations in the index of
+refraction $n\left(\boldsymbol{r},z\right)$.  Consider a geometric ray
+traversing the path between a source at range $\mathcal{R}_{a}$ and
+lateral offset $\boldsymbol{r}_{a}$ and a location in the pupil plane
+denoted by $\boldsymbol{r}$, as shown in Figure
+\ref{indexofrefraction}.  The total phase aberration is given by the integral
+along the geometric ray.
+\begin{equation}\label{totalphase_n}
+\hat{\phi}_{a}\left(\boldsymbol{r}\right) = k \int_{0}^{\mathcal{R}_{a}} dz \; 
+n\left[\boldsymbol{r}\left(1-z/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z/\mathcal{R}_{a}, z\right]
+\end{equation}
+
+
+%  \myFigureI {indexofrefraction}
+% {{figs/indexofrefraction/indexofrefraction}{}} 
+% {{6.5cm}{.6\textwidth}}
+% { {Geometric Raytrace} {A ray emitted by a source at range
+%     $\mathcal{R}_{a}$ and lateral offset $\boldsymbol{r}_{a}$ descends
+%     through turbulence to arrive at a location $\boldsymbol{r}$ in the
+%     telescope pupil plane.  The wavefront phase aberration at location
+%     $\boldsymbol{r}$ is proportional to the integral of the index of
+%     refraction $n\left[\boldsymbol{r}\left(1-z/\mathcal{R}_{a}\right) +
+%       \boldsymbol{r}_{a} z/\mathcal{R}_{a}, z\right]$ along the geometric
+%     path.}}
+
+
+The aperture averaged piston component of the wavefront phase is given by the average of
+Equation \ref{totalphase_n} over the telescope aperture.
+\begin{equation}\label{pistonphase_n}
+\bar{\phi}_{a} = \frac{k}{\pi R^{2}} \int_{0}^{\mathcal{R}_{a}} dz 
+\int d\boldsymbol{r}^{\prime} W(\boldsymbol{r}^{\prime}/R) \; n\left[\boldsymbol{r}^{\prime}\left(1-z/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z/\mathcal{R}_{a}, z\right]
+\end{equation}
+The piston removed component of the wavefront phase is then
+\begin{equation}\label{prphase_n}
+\phi_{a}\left(\boldsymbol{r}\right) = \hat{\phi}_{a}\left(\boldsymbol{r}\right) - \bar{\phi}_{a}
+\end{equation}
+The tilt is given by the coordinate weighted average of Equation
+\ref{totalphase_n} over the telescope aperture.
+\begin{equation}\label{tilt_n}
+\begin{aligned}
+\boldsymbol{\theta} &= \frac{4}{\pi R^{4}} \int_{0}^{\mathcal{R}_{a}} dz 
+\int d\boldsymbol{r}^{\prime} \boldsymbol{r}^{\prime} W(\boldsymbol{r}^{\prime}/R) \; n\left[\boldsymbol{r}^{\prime}\left(1-z/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z/\mathcal{R}_{a}, z\right]
+\end{aligned}
+\end{equation}
+Definition of this quantity is often confusing.  There is a
+distinction between angular tilt, tilt optical path difference, and
+tilt phase.  The first quantity is the angle formed by the physical,
+tilted surface with respect to the aperture plane.  This is the
+quantity $\boldsymbol{\theta}$ expressed in Equation \ref{tilt_n}.
+The second is the physical distance between the tilted surface and the
+aperture plane.  The final quantity is the physical difference
+multiplied by the wavenumber $k$, and measures tilt phase.  As a
+second point, tilt variances may be quoted as one-axis one-sigma or as
+two-axis one-sigma.  This report employs the one-axis one-sigma
+convention.  To define terms and demonstrate that the coefficient in
+Equation \ref{tilt_n} is correct, consider a hypothetical index of
+refraction function $n\left[\boldsymbol{r},z\right] = \alpha r \cos
+\theta \delta\left(z\right)$, where $\delta\left(z\right)$ is the
+Kronecker delta function.  Equation \ref{tilt_n} should measure the
+angular tilt coefficient $\alpha$, so that $\boldsymbol{\theta} =
+\left(\theta_{x}, \theta_{y}\right) = \left(\alpha, 0\right)$.  We
+have
+\begin{equation}
+\begin{aligned}
+\boldsymbol{\theta} & = 
+\left\{
+\begin{array}{c}
+\theta_{x} \\
+\theta_{y} 
+\end{array} 
+\right\}\\
+& = 
+\frac{4}{\pi R^{4}} \int_{0}^{\mathcal{R}_{a}} dz 
+\int d\boldsymbol{r}^{\prime} \boldsymbol{r}^{\prime} W(\boldsymbol{r}^{\prime}/R) \; n\left[\boldsymbol{r},z\right] \\
+& = 
+\frac{4}{\pi R^{4}} \int_{0}^{\mathcal{R}_{a}} dz \delta\left(z\right)
+\int_{0}^{R} r dr \int_{0}^{2\pi} d\theta 
+\left\{
+\begin{array}{c}
+r \cos \theta \\
+r \sin \theta \\ 
+\end{array}
+\right\}
+\left\{
+\begin{array}{c}
+\alpha r \cos \theta \\
+0 \\ 
+\end{array}
+\right\} \\
+& = 
+\frac{4}{\pi R^{4}}  
+\int_{0}^{R} r dr \int_{0}^{2\pi} d\theta 
+\left\{
+\begin{array}{c}
+\alpha r^{2} \cos^{2} \theta \\
+0 \\ 
+\end{array}
+\right\}\\
+& = 
+\left\{
+\begin{array}{c}
+\alpha \\
+0 \\ 
+\end{array}
+\right\}
+\end{aligned}
+\end{equation}
+as anticipated.  By simple geometry, the tilt phase is the dot product
+of the tilt $\boldsymbol{\theta}$ with the coordinate offset
+$\boldsymbol{r}$ multiplied by the wavenumber.
+\begin{equation}\label{tiltphase_n}
+\phi^{T}_{a}\left(\boldsymbol{r}\right) = k \boldsymbol{r}  \cdot \boldsymbol{\theta} 
+\end{equation}
+
+Equations \ref{totalphase_n} - \ref{tilt_n} and Equation
+\ref{tiltphase_n} are the expressions required to form the covariance
+functions in Equation \ref{tpcf}.  The two-point piston removed phase
+covariance function is
+\begin{equation}\label{prphase_n}
+\begin{aligned}
+&\left\langle \vphantom{\hat{\phi}_{a}} \phi_{a}\left(\boldsymbol{r}_{1}\right) \phi_{b}\left(\boldsymbol{r}_{2}\right)\right\rangle = \\
+&\quad\quad\quad\quad
+\frac{k^{2}}{\pi^{2}R^{4}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\boldsymbol{r}^{\prime}_{1}d\boldsymbol{r}^{\prime}_{2} W(\boldsymbol{r}^{\prime}_{1}/R) W(\boldsymbol{r}^{\prime}_{2}/R) \\
+&\quad\quad\quad\quad\quad\quad
+\left\{\vphantom{\boldsymbol{r}^{\prime}_{1}}
+\left\langle n\left[\boldsymbol{r}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]
+ n\left[\boldsymbol{r}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle\right. -
+\\
+&\quad\quad\quad\quad\quad\quad
+\left\langle n\left[\boldsymbol{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a}, z_{2}\right]
+ n\left[\boldsymbol{r}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle -
+\\
+&\quad\quad\quad\quad\quad\quad
+\left\langle n\left[\boldsymbol{r}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]
+ n\left[\boldsymbol{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle +
+\\
+&\quad\quad\quad\quad\quad\quad
+\left.
+\left\langle n\left[\boldsymbol{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]
+ n\left[\boldsymbol{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle
+\right\}
+\end{aligned}
+\end{equation}
+The tilt covariance function is
+\begin{equation}\label{tphase_n}
+\begin{aligned}
+&\left\langle \phi^{T}_{a}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{b}\left(\boldsymbol{r}_{2}\right)\right\rangle = \\
+&\quad\quad\quad\quad
+\frac{16 k^{2}}{\pi^{2}R^{8}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\boldsymbol{r}^{\prime}_{1}d\boldsymbol{r}^{\prime}_{2} W(\boldsymbol{r}^{\prime}_{1}/R) W(\boldsymbol{r}^{\prime}_{2}/R)
+\left(\boldsymbol{r}_{1} \cdot \boldsymbol{r}^{\prime}_{1}\right)
+\left(\boldsymbol{r}_{2} \cdot \boldsymbol{r}^{\prime}_{2}\right)
+\\
+&\quad\quad\quad\quad\quad\quad
+\left\langle n\left[\boldsymbol{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]
+ n\left[\boldsymbol{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle
+\end{aligned}
+\end{equation}
+Finally, the covariance between the tilt and piston removed phase is given by 
+\begin{equation}\label{tprphase_n}
+\begin{aligned}
+&\left\langle \phi_{a}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{b}\left(\boldsymbol{r}_{2}\right)\right\rangle = \\
+&\quad\quad\quad\quad
+\frac{4 k^{2}}{\pi^{2}R^{6}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\boldsymbol{r}^{\prime}_{1}d\boldsymbol{r}^{\prime}_{2} W(\boldsymbol{r}^{\prime}_{1}/R) W(\boldsymbol{r}^{\prime}_{2}/R)
+\left(\boldsymbol{r}_{2} \cdot \boldsymbol{r}^{\prime}_{2}\right)
+\\
+&\quad\quad\quad\quad\quad\quad
+\left\{
+\left\langle n\left[\boldsymbol{r}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]
+ n\left[\boldsymbol{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle - 
+\right.
+\\
+&\quad\quad\quad\quad\quad\quad
+\left.
+\left\langle n\left[\boldsymbol{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]
+ n\left[\boldsymbol{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle
+\right\}
+\end{aligned}
+\end{equation}
+
+
+A key result from Komolgorov theory is that the structure function for the index of refraction follows a two-thirds power law.
+\begin{equation}\label{komolgorov}
+\begin{aligned}
+D_{n}\left(\boldsymbol{r}_{1}, z_{1}, \boldsymbol{r}_{2}, z_{2}\right) & = 
+\left\langle \left\{n\left(\boldsymbol{r}_{1}, z_{1}\right) - n\left(\boldsymbol{r}_{2}, z_{2}\right)\right\}^{2} \right\rangle \\
+& = 
+C_{n}^{2}\left(\frac{z_{1} + z_{2}}{2}\right) \left[ \left\vert \boldsymbol{r}_{1} - \boldsymbol{r}_{2} \right\vert^{2} + \left\vert z_{1} - z_{2} \right\vert^{2}\right]^{1/3}
+\end{aligned}
+\end{equation}
+Departures from the Komolgorov theory may be accommodated through use
+of a different structure function.  For example, the effects of finite 
+outer scale may be represented through the structure function 
+\begin{equation}
+\begin{aligned}
+&D_{n}\left(\boldsymbol{r}_{1}, z_{1}, \boldsymbol{r}_{2}, z_{2}\right) = \\
+&\quad\quad\quad C_{n}^{2}\left(\frac{z_{1} + z_{2}}{2}\right) \kappa_{0}^{-2/3}
+\left\{\vphantom{\left(\left\vert \boldsymbol{r}_{1} - \boldsymbol{r}_{2} \right\vert^{2} + \left\vert z_{1} - z_{2} \right\vert\right)^{1/3} }
+1.0468 - \right.\\
+&\quad\quad\quad\quad 
+\left.
+0.62029\kappa_{0}^{1/3}\left(\left\vert \boldsymbol{r}_{1} - \boldsymbol{r}_{2} \right\vert^{2} + \left\vert z_{1} - z_{2} \right\vert\right)^{1/3} 
+K_{1/3}\left(\kappa_{0}\left[\left\vert \boldsymbol{r}_{1} - \boldsymbol{r}_{2} \right\vert^{2} + \left\vert z_{1} - z_{2} \right\vert\right]\right)\right\}
+\end{aligned}
+\end{equation}
+where $\kappa_{0} = 2\pi / L_{0}$, $L_{0}$ is the outer scale, and
+$K_{1/3}\left(x\right)$ is a modified Bessel
+function\cite{sasiela2007electromagnetic}.  A finite outer scale is
+not considered further in this report.
+
+The next step in this calculation is to use Equation \ref{komolgorov}
+to express Equations \ref{prphase_n} - \ref{tprphase_n} in terms of
+coordinate offsets rather than index of refraction covariance
+functions.  We can rewrite Equation \ref{prphase_n} in a form that
+will permit use of Equation \ref{komolgorov} via the expression
+\begin{equation}\label{simplify}
+\begin{split}
+&\left\langle \left\{n\left[\boldsymbol{r}_{1},z_{1}\right] - n\left[\boldsymbol{r}^{\prime}_{1},z_{1}\right]\right\}n\left[\boldsymbol{r}_{2},z_{2}\right]\right\rangle -
+\left\langle \left\{n\left[\boldsymbol{r}_{1},z_{1}\right] - n\left[\boldsymbol{r}^{\prime}_{1},z_{1}\right]\right\}n\left[\boldsymbol{r}^{\prime}_{2},z_{2}\right]\right\rangle = \\
+&\quad\quad\quad\quad\quad\quad
+-\frac{1}{2} \left(\left\langle \left\{n\left[\boldsymbol{r}_{1},z_{1}\right] - n\left[\boldsymbol{r}_{2},z_{2}\right]\right\}^{2}\right\rangle - 
+\left\langle \left\{n\left[\boldsymbol{r}^{\prime}_{1},z_{1}\right] - n\left[\boldsymbol{r}_{2},z_{2}\right]\right\}^{2}\right\rangle\right) \\
+&\quad\quad\quad\quad\quad\quad
++\frac{1}{2} \left(\left\langle \left\{n\left[\boldsymbol{r}_{1},z_{1}\right] - n\left[\boldsymbol{r}^{\prime}_{2},z_{2}\right]\right\}^{2}\right\rangle - 
+\left\langle \left\{n\left[\boldsymbol{r}^{\prime}_{1},z_{1}\right] - n\left[\boldsymbol{r}^{\prime}_{2},z_{2}\right]\right\}^{2}\right\rangle\right) \\
+\end{split}
+\end{equation}
+This substitution yields
+\begin{equation}\label{prphase_n2}
+\begin{aligned}
+& \left\langle \vphantom{\hat{\phi}_{a}} \phi_{a}\left(\boldsymbol{r}_{1}\right) \phi_{b}\left(\boldsymbol{r}_{2}\right)\right\rangle = \\
+&\quad\quad\quad\quad
+-\frac{k^{2}}{2\pi^{2}R^{4}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\boldsymbol{r}^{\prime}_{1}d\boldsymbol{r}^{\prime}_{2}  W(\boldsymbol{r}^{\prime}_{1}/R) W(\boldsymbol{r}^{\prime}_{2}/R)\\
+&\quad\quad\quad\quad\quad\quad
+\left(
+\left\langle \left\{n\left[\boldsymbol{r}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right] - 
+ n\left[\boldsymbol{r}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\}^{2} \right\rangle\right. - \\
+&\quad\quad\quad\quad\quad\quad
+\left\langle \left\{n\left[\boldsymbol{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right] - 
+ n\left[\boldsymbol{r}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\}^{2} \right\rangle - \\
+&\quad\quad\quad\quad\quad\quad
+\left\langle \left\{n\left[\boldsymbol{r}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right] - 
+ n\left[\boldsymbol{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\}^{2} \right\rangle + \\
+&\quad\quad\quad\quad\quad\quad
+\left.
+\left\langle \left\{n\left[\boldsymbol{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right] - 
+ n\left[\boldsymbol{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\}^{2} \right\rangle\right) \\
+\end{aligned}
+\end{equation}
+Using Equation \ref{komolgorov}, this expression may be rewritten as
+\begin{equation}\label{prphase_n3}
+\begin{aligned}
+& \left\langle \vphantom{\hat{\phi}_{a}} \phi_{a}\left(\boldsymbol{r}_{1}\right) \phi_{b}\left(\boldsymbol{r}_{2}\right)\right\rangle = \\
+&\quad\quad\quad\quad
+-\frac{k^{2}}{2\pi^{2}R^{4}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\boldsymbol{r}^{\prime}_{1}d\boldsymbol{r}^{\prime}_{2}  
+W(\boldsymbol{r}^{\prime}_{1}/R) W(\boldsymbol{r}^{\prime}_{2}/R) C_{n}^{2}\left(\frac{z_{1} + z_{2}}{2}\right) \\
+&\quad\quad\quad\quad\quad\quad
+\left(
+\left[ \left\vert \boldsymbol{r}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a} - 
+\boldsymbol{r}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}\right\vert^{2} + 
+\left\vert z_{1} - z_{2} \right\vert^{2}\right]^{1/3}
+\right. -\\
+& \quad\quad\quad\quad\quad\quad
+\left[ \left\vert \boldsymbol{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a} - 
+\boldsymbol{r}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}\right\vert^{2} + 
+\left\vert z_{1} - z_{2} \right\vert^{2}\right]^{1/3} - \\
+& \quad\quad\quad\quad\quad\quad
+\left[ \left\vert \boldsymbol{r}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a} - 
+\boldsymbol{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}\right\vert^{2} + 
+\left\vert z_{1} - z_{2} \right\vert^{2}\right]^{1/3} + \\
+& \quad\quad\quad\quad\quad\quad
+\left.
+\left[ \left\vert \boldsymbol{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a} - 
+\boldsymbol{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}\right\vert^{2} + 
+\left\vert z_{1} - z_{2} \right\vert^{2}\right]^{1/3}\right)
+\end{aligned}
+\end{equation}
+
+One may cast Equation \ref{tphase_n} into a similar form through the relationship
+\begin{equation}
+\begin{aligned}
+&  \left\langle n\left[\boldsymbol{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]
+n\left[\boldsymbol{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle = \\
+& \quad\quad -\frac{1}{2}\left\langle \left\{ n\left[\boldsymbol{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right] - 
+ n\left[\boldsymbol{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right]\right\}^{2} \right\rangle + \\
+&\quad\quad\quad\quad \frac{1}{2}\left\langle \left\{ n\left[\boldsymbol{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right)\right]\right\}^{2}\right\rangle + 
+\frac{1}{2}\left\langle \left\{ n\left[\boldsymbol{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right)\right]\right\}^{2}\right\rangle \\
+\end{aligned}
+\end{equation}
+and by observing via asymmetry of the integrand that
+\begin{equation}\label{intzero}
+\begin{aligned}
+\int d\boldsymbol{r}^{\prime}_{1} W\left(\boldsymbol{r}^{\prime}_{1}/R\right) \left(\boldsymbol{r}_{1}\cdot\boldsymbol{r}^{\prime}_{1}\right)
+\left\langle \left\{ n\left[\boldsymbol{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right)\right]\right\}^{2}\right\rangle
+\int d\boldsymbol{r}^{\prime}_{2} W\left(\boldsymbol{r}^{\prime}_{2}/R\right) \left(\boldsymbol{r}_{2}\cdot\boldsymbol{r}^{\prime}_{2}\right) = 0 \\
+\int d\boldsymbol{r}^{\prime}_{2} W\left(\boldsymbol{r}^{\prime}_{2}/R\right) \left(\boldsymbol{r}_{2}\cdot\boldsymbol{r}^{\prime}_{2}\right) 
+\left\langle \left\{ n\left[\boldsymbol{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{a}\right)\right]\right\}^{2}\right\rangle
+\int d\boldsymbol{r}^{\prime}_{1} W\left(\boldsymbol{r}^{\prime}_{1}/R\right) \left(\boldsymbol{r}_{1}\cdot\boldsymbol{r}^{\prime}_{1}\right) = 0
+\end{aligned}
+\end{equation}
+Consequently, Equation \ref{tphase_n} may be written 
+\begin{equation}\label{tphase_n2}
+\begin{aligned}
+&\left\langle \phi^{T}_{a}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{b}\left(\boldsymbol{r}_{2}\right)\right\rangle = \\
+&\quad\quad\quad
+-\frac{8k^{2}}{\pi^{2}R^{8}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\boldsymbol{r}^{\prime}_{1}d\boldsymbol{r}^{\prime}_{2} W(\boldsymbol{r}^{\prime}_{1}/R) W(\boldsymbol{r}^{\prime}_{2}/R)
+\left(\boldsymbol{r}_{1} \cdot \boldsymbol{r}^{\prime}_{1}\right)
+\left(\boldsymbol{r}_{2} \cdot \boldsymbol{r}^{\prime}_{2}\right)
+\\
+&\quad\quad\quad
+\left\langle \left\{ n\left[\boldsymbol{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right] - 
+ n\left[\boldsymbol{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right]\right\}^{2} \right\rangle \\
+\end{aligned}
+\end{equation}
+Using Equation \ref{komolgorov}, this becomes
+\begin{equation}\label{tphase_n3}
+\begin{aligned}
+&\left\langle \phi^{T}_{a}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{b}\left(\boldsymbol{r}_{2}\right)\right\rangle = \\
+&\quad\quad\quad
+-\frac{8k^{2}}{\pi^{2}R^{8}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\boldsymbol{r}^{\prime}_{1}d\boldsymbol{r}^{\prime}_{2} W(\boldsymbol{r}^{\prime}_{1}/R) W(\boldsymbol{r}^{\prime}_{2}/R)
+\left(\boldsymbol{r}_{1} \cdot \boldsymbol{r}^{\prime}_{1}\right)
+\left(\boldsymbol{r}_{2} \cdot \boldsymbol{r}^{\prime}_{2}\right)
+C_{n}^{2}\left(\frac{z_{1} + z_{2}}{2}\right) 
+\\
+&\quad\quad\quad
+\left[ \left\vert \boldsymbol{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a} - 
+ \boldsymbol{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}\right\vert^{2} + 
+\left\vert z_{1} - z_{2} \right\vert^{2} \right]^{1/3}
+\end{aligned}
+\end{equation}
+
+Finally, the covariances between the tilt and piston removed phase in Equation \ref{tprphase_n} may be rewritten as 
+\begin{equation}\label{tprphase_n2}
+\begin{aligned}
+&\left\langle \phi_{a}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{b}\left(\boldsymbol{r}_{2}\right)\right\rangle = \\
+&\quad\quad\quad\quad
+-\frac{2k^{2}}{\pi^{2}R^{6}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\boldsymbol{r}^{\prime}_{1}d\boldsymbol{r}^{\prime}_{2} W(\boldsymbol{r}^{\prime}_{1}/R) W(\boldsymbol{r}^{\prime}_{2}/R)
+\left(\boldsymbol{r}_{2} \cdot \boldsymbol{r}^{\prime}_{2}\right)
+\\
+&\quad\quad\quad\quad\quad\quad
+\left\{
+\left\langle \left\{n\left[\boldsymbol{r}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right] -
+ n\left[\boldsymbol{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\}^{2}\right\rangle 
+\right. -
+\\
+&\quad\quad\quad\quad\quad\quad
+\left.
+\left\langle \left\{ n\left[\boldsymbol{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]- 
+ n\left[\boldsymbol{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\}^{2}\right\rangle
+\right\}
+\end{aligned}
+\end{equation}
+Again using Equation \ref{komolgorov}, this may be expressed as
+\begin{equation}\label{tprphase_n3}
+\begin{aligned}
+&\left\langle \phi_{a}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{b}\left(\boldsymbol{r}_{2}\right)\right\rangle = \\
+&\quad\quad\quad\quad
+-\frac{2k^{2}}{\pi^{2}R^{6}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\boldsymbol{r}^{\prime}_{1}d\boldsymbol{r}^{\prime}_{2} W(\boldsymbol{r}^{\prime}_{1}/R) W(\boldsymbol{r}^{\prime}_{2}/R)
+\left(\boldsymbol{r}^{\prime}_{2} \cdot \boldsymbol{r}^{\prime}_{2}\right)
+C_{n}^{2}\left(\frac{z_{1} + z_{2}}{2}\right) 
+\\
+&\quad\quad\quad\quad\quad\quad
+\left(
+\left[\left\vert \boldsymbol{r}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a} - \boldsymbol{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right\vert^{2}   + 
+\left\vert z_{1} - z_{2} \right\vert^{2}\right]^{1/3}
+\right. -
+\\
+&\quad\quad\quad\quad\quad\quad
+\left.
+\left[ \left\vert \boldsymbol{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z_{1}/\mathcal{R}_{a} - 
+ \boldsymbol{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z_{2}/\mathcal{R}_{b}\right\vert^{2} + 
+\left\vert z_{1} - z_{2} \right\vert^{2}\right]^{1/3}
+\right)
+\end{aligned}
+\end{equation}
+
+Equations \ref{prphase_n3}, \ref{tphase_n3} and \ref{tprphase_n3}
+constitute predictions for the two point covariance functions derived
+from the theory of Komolgorov turbulence.  These functions may be
+numerically calculated for arbitrary source geometries, telescope
+aperture diameters, and $C_{n}^{2}(z)$ profiles.  However, further
+simplification of these expressions is possible.  To proceed, consider
+the coordinate transformation
+\begin{equation}
+\begin{aligned}
+z = \frac{z_{1}+z_{2}}{2} \quad & \quad z_{-} = z_{1}-z_{2} \\
+z_{1} = z+\frac{z_{-}}{2} \quad & \quad z_{2} = z-\frac{z_{-}}{2} \\
+\end{aligned}
+\end{equation}
+Tyler invokes the assumption that only contributions to the integral
+arise when $z_{-} \approx 0$ due to the rapid falloff in the
+covariance function, and makes the approximations
+\begin{equation}
+\begin{aligned}
+\frac{z_{1}}{\mathcal{R}_{a}} \approx \frac{z}{\mathcal{R}_{a}} \quad & \quad \frac{z_{2}}{\mathcal{R}_{b}} \approx \frac{z}{\mathcal{R}_{b}} 
+\end{aligned}
+\end{equation}
+Sasiela\cite{sasiela2007electromagnetic} provides a complementary and
+more detailed description in Section 2.3.  With this approximation,
+the limits of integration on the variable $z$ extend to the minimum
+range $\mathcal{R}_{\rm min} = {\rm min}\left[\mathcal{R}_{a},
+  \mathcal{R}_{b}\right]$.  The limits of integration on the variable
+$z_{-}$ may be extended to $\pm\infty$ without affecting the value of
+the integral.  Ergo, Equations \ref{prphase_n3},
+\ref{tphase_n3} and \ref{tprphase_n3} may be written as
+\begin{equation}\label{prphase_n4}
+\begin{aligned}
+& \left\langle \vphantom{\hat{\phi}_{a}} \phi_{a}\left(\boldsymbol{r}_{1}\right) \phi_{b}\left(\boldsymbol{r}_{2}\right)\right\rangle = \\
+&\quad\quad\quad
+-\frac{k^{2}}{2\pi^{2}R^{4}} \int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right)
+\int_{-\infty}^{\infty} dz_{-}\\
+&\quad\quad\quad\quad\quad 
+\iint \; d\boldsymbol{r}^{\prime}_{1}d\boldsymbol{r}^{\prime}_{2}  
+W(\boldsymbol{r}^{\prime}_{1}/R) W(\boldsymbol{r}^{\prime}_{2}/R) \\
+&\quad\quad\quad\quad\quad\quad
+\left(
+\left[ \left\vert \boldsymbol{r}_{1}\left(1-z/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z/\mathcal{R}_{a} - 
+\boldsymbol{r}_{2}\left(1-z/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z/\mathcal{R}_{b}\right\vert^{2} + 
+\left\vert z_{-} \right\vert^{2}\right]^{1/3} -
+\right. \\
+& \quad\quad\quad\quad\quad\quad
+\left[ \left\vert \boldsymbol{r}^{\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z/\mathcal{R}_{a} - 
+\boldsymbol{r}_{2}\left(1-z/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z/\mathcal{R}_{b}\right\vert^{2} + 
+\left\vert z_{-} \right\vert^{2}\right]^{1/3} - \\
+& \quad\quad\quad\quad\quad\quad
+\left[ \left\vert \boldsymbol{r}_{1}\left(1-z/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z/\mathcal{R}_{a} - 
+\boldsymbol{r}^{\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z/\mathcal{R}_{b}\right\vert^{2} + 
+\left\vert z_{-} \right\vert^{2}\right]^{1/3} + \\
+& \quad\quad\quad\quad\quad\quad
+\left.
+\left[ \left\vert \boldsymbol{r}^{\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z/\mathcal{R}_{a} - 
+\boldsymbol{r}^{\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z/\mathcal{R}_{b}\right\vert^{2} + 
+\left\vert z_{-} \right\vert^{2}\right]^{1/3}\right)
+\end{aligned}
+\end{equation}
+
+\begin{equation}\label{tphase_n4}
+\begin{aligned}
+&\left\langle \phi^{T}_{a}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{b}\left(\boldsymbol{r}_{2}\right)\right\rangle = \\
+&\quad\quad\quad
+-\frac{8k^{2}}{\pi^{2}R^{8}} \int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right)
+\int_{-\infty}^{\infty} dz_{-} \\
+&\quad\quad\quad\quad\quad 
+\iint \; d\boldsymbol{r}^{\prime}_{1}d\boldsymbol{r}^{\prime}_{2} W(\boldsymbol{r}^{\prime}_{1}/R) W(\boldsymbol{r}^{\prime}_{2}/R)
+\left(\boldsymbol{r}_{1} \cdot \boldsymbol{r}^{\prime}_{1}\right)
+\left(\boldsymbol{r}_{2} \cdot \boldsymbol{r}^{\prime}_{2}\right)
+\\
+&\quad\quad\quad\quad\quad\quad
+\left[ \left\vert \boldsymbol{r}^{\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z/\mathcal{R}_{a} - 
+ \boldsymbol{r}^{\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z/\mathcal{R}_{b}\right\vert^{2} + 
+\left\vert z_{-} \right\vert^{2} \right]^{1/3}
+\end{aligned}
+\end{equation}
+
+\begin{equation}\label{tprphase_n4}
+\begin{aligned}
+&\left\langle \phi_{a}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{b}\left(\boldsymbol{r}_{2}\right)\right\rangle = \\
+&\quad\quad\quad
+-\frac{2k^{2}}{\pi^{2}R^{6}} \int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right) 
+\int_{-\infty}^{\infty} dz_{-} \\
+&\quad\quad\quad\quad\quad 
+\iint  \; d\boldsymbol{r}^{\prime}_{1}d\boldsymbol{r}^{\prime}_{2} W(\boldsymbol{r}^{\prime}_{1}/R) W(\boldsymbol{r}^{\prime}_{2}/R)
+\left(\boldsymbol{r}^{\prime}_{2} \cdot \boldsymbol{r}^{\prime}_{2}\right)
+\\
+&\quad\quad\quad\quad\quad\quad
+\left(
+\left[\left\vert \boldsymbol{r}_{1}\left(1-z/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z/\mathcal{R}_{a} - \boldsymbol{r}^{\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z/\mathcal{R}_{b}\right\vert^{2}   + 
+\left\vert z_{-} \right\vert^{2}\right]^{1/3}
+\right. -
+\\
+&\quad\quad\quad\quad\quad\quad
+\left.
+\left[ \left\vert \boldsymbol{r}^{\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z/\mathcal{R}_{a} - 
+ \boldsymbol{r}^{\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z/\mathcal{R}_{b}\right\vert^{2} + 
+\left\vert z_{-} \right\vert^{2}\right]^{1/3}
+\right)
+\end{aligned}
+\end{equation}
+
+The next step in this calculation is to integrate Equations
+\ref{prphase_n4} - \ref{tprphase_n4} over the variable $z_{-}$
+using the expression 
+\begin{equation}\label{intglident}
+\int_{-\infty}^{\infty} dz\left[\left(A^{2} + z^{2}\right)^{1/3} - z^{2/3}\right] = 
+\frac{2^{1/3}}{5}\frac{\left[\Gamma\left(\frac{1}{6}\right)\right]^{2}}{\Gamma\left(\frac{1}{3}\right)} A^{5/3}
+\end{equation}
+The quantity $\left\vert z_{-}\right\vert^{2/3}$ may be added and
+subtracted pairwise to Equations \ref{prphase_n4} and
+\ref{tprphase_n4} so as to produce integrands of the form shown in
+Equation \ref{intglident}.  Appealing to Equation \ref{intzero}, this
+same quantity may be added to Equation \ref{tphase_n4} without
+changing the value of the integrand.  This permits integration over
+$z_{-}$ via the relationship The expressions for the piston removed
+phase covariance, tilt covariance, and cross covariance become
+\begin{equation}\label{prphase_n5}
+\begin{aligned}
+&\left\langle \vphantom{\hat{\phi}_{a}} \phi_{a}\left(\boldsymbol{r}_{1}\right) \phi_{b}\left(\boldsymbol{r}_{2}\right)\right\rangle = \\
+&\quad\quad\quad
+-\frac{k^{2}}{2\pi^{2}R^{4}} 
+\frac{2^{1/3}}{5}\frac{\left[\Gamma\left(\frac{1}{6}\right)\right]^{2}}{\Gamma\left(\frac{1}{3}\right)} 
+\int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right) \\
+&\quad\quad\quad\quad\quad
+\iint \; d\boldsymbol{r}^{\prime}_{1}d\boldsymbol{r}^{\prime}_{2}  
+W(\boldsymbol{r}^{\prime}_{1}/R) W(\boldsymbol{r}^{\prime}_{2}/R) \\
+&\quad\quad\quad\quad\quad\quad
+\left(
+\left\vert \boldsymbol{r}_{1}\left(1-z/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z/\mathcal{R}_{a} - 
+\boldsymbol{r}_{2}\left(1-z/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z/\mathcal{R}_{b}\right\vert^{5/3} -
+\right. \\
+& \quad\quad\quad\quad\quad\quad
+\left\vert \boldsymbol{r}^{\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z/\mathcal{R}_{a} - 
+\boldsymbol{r}_{2}\left(1-z/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z/\mathcal{R}_{b}\right\vert^{5/3} - \\
+& \quad\quad\quad\quad\quad\quad
+\left\vert \boldsymbol{r}_{1}\left(1-z/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z/\mathcal{R}_{a} - 
+\boldsymbol{r}^{\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z/\mathcal{R}_{b}\right\vert^{5/3} + \\
+& \quad\quad\quad\quad\quad\quad
+\left.
+\left\vert \boldsymbol{r}^{\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z/\mathcal{R}_{a} - 
+\boldsymbol{r}^{\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z/\mathcal{R}_{b}\right\vert^{5/3}\right)
+\end{aligned}
+\end{equation}
+
+\begin{equation}\label{tphase_n5}
+\begin{aligned}
+&\left\langle \phi^{T}_{a}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{b}\left(\boldsymbol{r}_{2}\right)\right\rangle = \\
+&\quad\quad\quad
+-\frac{8k^{2}}{\pi^{2}R^{8}} 
+\frac{2^{1/3}}{5}\frac{\left[\Gamma\left(\frac{1}{6}\right)\right]^{2}}{\Gamma\left(\frac{1}{3}\right)} 
+\int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right) \\
+&\quad\quad\quad\quad\quad
+\iint \; d\boldsymbol{r}^{\prime}_{1}d\boldsymbol{r}^{\prime}_{2} W(\boldsymbol{r}^{\prime}_{1}/R) W(\boldsymbol{r}^{\prime}_{2}/R)
+\left(\boldsymbol{r}_{1} \cdot \boldsymbol{r}^{\prime}_{1}\right)
+\left(\boldsymbol{r}_{2} \cdot \boldsymbol{r}^{\prime}_{2}\right)
+\\
+&\quad\quad\quad\quad\quad\quad
+\left\vert \boldsymbol{r}^{\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z/\mathcal{R}_{a} - 
+ \boldsymbol{r}^{\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z/\mathcal{R}_{b}\right\vert^{5/3}
+\end{aligned}
+\end{equation}
+
+\begin{equation}\label{tprphase_n5}
+\begin{aligned}
+&\left\langle \phi_{a}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{b}\left(\boldsymbol{r}_{2}\right)\right\rangle = \\
+&\quad\quad\quad
+-\frac{2k^{2}}{\pi^{2}R^{6}} 
+\frac{2^{1/3}}{5}\frac{\left[\Gamma\left(\frac{1}{6}\right)\right]^{2}}{\Gamma\left(\frac{1}{3}\right)} 
+\int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right) \\
+&\quad\quad\quad\quad\quad
+\iint  \; d\boldsymbol{r}^{\prime}_{1}d\boldsymbol{r}^{\prime}_{2} W(\boldsymbol{r}^{\prime}_{1}/R) W(\boldsymbol{r}^{\prime}_{2}/R)
+\left(\boldsymbol{r}^{\prime}_{2} \cdot \boldsymbol{r}^{\prime}_{2}\right)
+\\
+&\quad\quad\quad\quad\quad\quad
+\left(
+\left\vert \boldsymbol{r}_{1}\left(1-z/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z/\mathcal{R}_{a} - \boldsymbol{r}^{\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z/\mathcal{R}_{b}\right\vert^{5/3}
+\right. -
+\\
+&\quad\quad\quad\quad\quad\quad
+\left.
+\left\vert \boldsymbol{r}^{\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \boldsymbol{r}_{a} z/\mathcal{R}_{a} - 
+ \boldsymbol{r}^{\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \boldsymbol{r}_{b} z/\mathcal{R}_{b}\right\vert^{5/3}
+\right)
+\end{aligned}
+\end{equation}
+
+
+Define the following two variables
+\begin{equation}\label{Omega}
+\boldsymbol{\Omega}_{ab}\left(z\right) = 
+\left(\frac{\boldsymbol{r}_{a}}{\mathcal{R}_{a}} - \frac{\boldsymbol{r}_{b}}{\mathcal{R}_{b}} \right) \frac{z/R}{1-z/\mathcal{R}_{\rm a}}
+\end{equation}
+\begin{equation}\label{Q}
+Q_{ab}\left(z\right) =  
+\frac{1 - z/\mathcal{R}_{\rm b}}{1-z/\mathcal{R}_{\rm a}}
+\end{equation}
+to arrive at
+\begin{equation}\label{prphase_n6}
+\begin{aligned}
+&\left\langle \vphantom{\hat{\phi}_{a}} \phi_{a}\left(\boldsymbol{r}_{1}\right) \phi_{b}\left(\boldsymbol{r}_{2}\right)\right\rangle = \\
+&\quad\quad\quad
+-\frac{k^{2}}{2\pi^{2}R^{4}} 
+\frac{2^{1/3}}{5}\frac{\left[\Gamma\left(\frac{1}{6}\right)\right]^{2}}{\Gamma\left(\frac{1}{3}\right)} 
+\int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right) 
+\left(1 - z/\mathcal{R}_{\rm a}\right)^{5/3}\\
+&\quad\quad\quad\quad\quad
+\iint \; d\boldsymbol{r}^{\prime}_{1}d\boldsymbol{r}^{\prime}_{2}  
+W(\boldsymbol{r}^{\prime}_{1}/R) W(\boldsymbol{r}^{\prime}_{2}/R) \\
+&\quad\quad\quad\quad\quad\quad
+\left(\left\vert \boldsymbol{r}_{1}  - Q_{ab}\left(z\right)\boldsymbol{r}_{2} - \boldsymbol{\Omega}_{ab}\left(z\right)R\right\vert^{5/3} -
+\left\vert \boldsymbol{r}^{\prime}_{1}  - Q_{ab}\left(z\right)\boldsymbol{r}_{2} - \boldsymbol{\Omega}_{ab}\left(z\right)R\right\vert^{5/3} -
+\right. \\
+& \quad\quad\quad\quad\quad\quad
+\left.
+\left\vert \boldsymbol{r}_{1}  - Q_{ab}\left(z\right)\boldsymbol{r}^{\prime}_{2} - \boldsymbol{\Omega}_{ab}\left(z\right)R\right\vert^{5/3} + 
+\left\vert \boldsymbol{r}^{\prime}_{1}  - Q_{ab}\left(z\right)\boldsymbol{r}^{\prime}_{2} - \boldsymbol{\Omega}_{ab}\left(z\right)R\right\vert^{5/3}\right)
+\end{aligned}
+\end{equation}
+
+\begin{equation}\label{tphase_n6}
+\begin{aligned}
+&\left\langle \phi^{T}_{a}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{b}\left(\boldsymbol{r}_{2}\right)\right\rangle = \\
+&\quad\quad\quad
+-\frac{8k^{2}}{\pi^{2}R^{8}} 
+\frac{2^{1/3}}{5}\frac{\left[\Gamma\left(\frac{1}{6}\right)\right]^{2}}{\Gamma\left(\frac{1}{3}\right)} 
+\int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right) 
+\left(1 - z/\mathcal{R}_{\rm a}\right)^{5/3}\\
+&\quad\quad\quad\quad\quad
+\iint \; d\boldsymbol{r}^{\prime}_{1}d\boldsymbol{r}^{\prime}_{2} W(\boldsymbol{r}^{\prime}_{1}/R) W(\boldsymbol{r}^{\prime}_{2}/R)
+\left(\boldsymbol{r}_{1} \cdot \boldsymbol{r}^{\prime}_{1}\right)
+\left(\boldsymbol{r}_{2} \cdot \boldsymbol{r}^{\prime}_{2}\right)
+\\
+&\quad\quad\quad\quad\quad\quad
+\left\vert \boldsymbol{r}^{\prime}_{1} - Q_{ab}\left(z\right) \boldsymbol{r}^{\prime}_{2} + \boldsymbol{\Omega}_{ab}\left(z\right) R\right\vert^{5/3}
+\end{aligned}
+\end{equation}
+
+\begin{equation}\label{tprphase_n6}
+\begin{aligned}
+&\left\langle \phi_{a}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{b}\left(\boldsymbol{r}_{2}\right)\right\rangle = \\
+&\quad\quad\quad
+-\frac{2k^{2}}{\pi^{2}R^{6}} 
+\frac{2^{1/3}}{5}\frac{\left[\Gamma\left(\frac{1}{6}\right)\right]^{2}}{\Gamma\left(\frac{1}{3}\right)} 
+\int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right) 
+\left(1 - z/\mathcal{R}_{\rm a}\right)^{5/3}\\
+&\quad\quad\quad\quad\quad
+\iint  \; d\boldsymbol{r}^{\prime}_{1}d\boldsymbol{r}^{\prime}_{2} W(\boldsymbol{r}^{\prime}_{1}/R) W(\boldsymbol{r}^{\prime}_{2}/R)
+\left(\boldsymbol{r}_{2} \cdot \boldsymbol{r}^{\prime}_{2}\right)
+\\
+&\quad\quad\quad\quad\quad\quad
+\left(
+\left\vert \boldsymbol{r}_{1} - Q_{ab}\left(z\right)\boldsymbol{r}^{\prime}_{2} + \boldsymbol{\Omega}_{ab}\left(z\right) R\right\vert^{5/3}
+- \left\vert \boldsymbol{r}^{\prime}_{1}  - 
+ Q_{ab}\left(z\right)\boldsymbol{r}^{\prime}_{2} + \boldsymbol{\Omega}_{ab}\left(z\right) R \right\vert^{5/3}
+\right)
+\end{aligned}
+\end{equation}
+
+As a final step, make the change of variables
+\begin{equation}
+\begin{aligned}
+\boldsymbol{\rho}_{1} = \boldsymbol{r}_{1}/R \quad & \quad \boldsymbol{\rho}_{2} = \boldsymbol{r}_{2}/R \\
+\boldsymbol{\rho}^{\prime}_{1} = \boldsymbol{r}^{\prime}_{1}/R \quad & \quad \boldsymbol{\rho}^{\prime}_{2} = \boldsymbol{r}^{\prime}_{2}/R
+\end{aligned}
+\end{equation}
+and define the quantity 
+\begin{equation}\label{Xi}
+\Xi = \frac{1}{5}\left(\frac{1}{2}\right)^{7/3} \frac{\left[\Gamma\left(\frac{1}{6}\right)\right]^{2}}{\Gamma\left(\frac{1}{3}\right)} = 0.458986
+\end{equation}
+to obtain
+\begin{equation}\label{prphase_n7}
+\begin{aligned}
+&\left\langle \vphantom{\hat{\phi}_{a}} \phi_{a}\left(R\boldsymbol{\rho}_{1}\right) \phi_{b}\left(R\boldsymbol{\rho}_{2}\right)\right\rangle = \\ 
+&\quad\quad\quad
+ -\frac{k^{2}}{\pi^{2}} \Xi D^{5/3}
+\int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right) \left(1 - z/\mathcal{R}_{\rm a}\right)^{5/3}\\
+& \quad\quad\quad\quad\quad
+\iint \; d\boldsymbol{\rho}^{\prime}_{1}d\boldsymbol{\rho}^{\prime}_{2}  
+W(\boldsymbol{\rho}^{\prime}_{1}) W(\boldsymbol{\rho}^{\prime}_{2}) \\
+& \quad\quad\quad\quad\quad\quad
+\left(\left\vert \boldsymbol{\rho}_{1}  - Q_{ab}\left(z\right)\boldsymbol{\rho}_{2} - \boldsymbol{\Omega}_{ab}\left(z\right)\right\vert^{5/3} -
+\left\vert \boldsymbol{\rho}^{\prime}_{1}  - Q_{ab}\left(z\right)\boldsymbol{\rho}_{2} - \boldsymbol{\Omega}_{ab}\left(z\right)\right\vert^{5/3} -
+\right. \\
+& \quad\quad\quad\quad\quad\quad
+\left.
+\left\vert \boldsymbol{\rho}_{1}  - Q_{ab}\left(z\right)\boldsymbol{\rho}^{\prime}_{2} - \boldsymbol{\Omega}_{ab}\left(z\right)\right\vert^{5/3} + 
+\left\vert \boldsymbol{\rho}^{\prime}_{1}  - Q_{ab}\left(z\right)\boldsymbol{\rho}^{\prime}_{2} - \boldsymbol{\Omega}_{ab}\left(z\right)\right\vert^{5/3}\right)
+\end{aligned}
+\end{equation}
+
+\begin{equation}\label{tphase_n7}
+\begin{aligned}
+&\left\langle \phi^{T}_{a}\left(R\boldsymbol{\rho}_{1}\right) \phi^{T}_{b}\left(R\boldsymbol{\rho}_{2}\right)\right\rangle = \\
+&\quad\quad\quad
+-\frac{16k^{2}}{\pi^{2}} 
+\Xi D^{5/3}
+\int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right) \left(1 - z/\mathcal{R}_{\rm a}\right)^{5/3}\\
+& \quad\quad\quad\quad\quad
+\iint \; d\boldsymbol{\rho}^{\prime}_{1}d\boldsymbol{\rho}^{\prime}_{2} W(\boldsymbol{\rho}^{\prime}_{1}) W(\boldsymbol{\rho}^{\prime}_{2})
+\left(\boldsymbol{\rho}_{1} \cdot \boldsymbol{\rho}^{\prime}_{1}\right)
+\left(\boldsymbol{\rho}_{2} \cdot \boldsymbol{\rho}^{\prime}_{2}\right)
+\\
+&\quad\quad\quad\quad\quad\quad
+\left\vert \boldsymbol{\rho}^{\prime}_{1} - Q_{ab}\left(z\right) \boldsymbol{\rho}^{\prime}_{2} + \boldsymbol{\Omega}_{ab}\left(z\right)\right\vert^{5/3}
+\end{aligned}
+\end{equation}
+
+\begin{equation}\label{tprphase_n7}
+\begin{aligned}
+&\left\langle \phi_{a}\left(R\boldsymbol{\rho}_{1}\right) \phi^{T}_{b}\left(R\boldsymbol{\rho}_{2}\right)\right\rangle = \\
+&\quad\quad\quad
+-\frac{4k^{2}}{\pi^{2}} 
+\Xi D^{5/3}
+\int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right) \left(1 - z/\mathcal{R}_{\rm a}\right)^{5/3}\\
+& \quad\quad\quad\quad\quad
+\iint  \; d\boldsymbol{\rho}^{\prime}_{1}d\boldsymbol{\rho}^{\prime}_{2} W(\boldsymbol{\rho}^{\prime}_{1}) W(\boldsymbol{\rho}^{\prime}_{2})
+\left(\boldsymbol{\rho}_{2} \cdot \boldsymbol{\rho}^{\prime}_{2}\right)
+C_{n}^{2}\left(z\right) 
+\\
+&\quad\quad\quad\quad\quad\quad
+\left(
+\left\vert \boldsymbol{\rho}_{1} - Q_{ab}\left(z\right)\boldsymbol{\rho}^{\prime}_{2} + \boldsymbol{\Omega}_{ab}\left(z\right) \right\vert^{5/3}
+- \left\vert \boldsymbol{\rho}^{\prime}_{1}  -  Q_{ab}\left(z\right)\boldsymbol{\rho}^{\prime}_{2} + \boldsymbol{\Omega}_{ab}\left(z\right)  \right\vert^{5/3}
+\right)
+\end{aligned}
+\end{equation}
+
+Equation \ref{prphase_n7} represents the two point piston removed
+phase covariance function for two sources at arbitrary ranges and
+locations within the field.  The parameters that enter into the
+calculation of this quantity are the wavenumber $k$, aperture diameter
+$D$, turbulence profile $C_{n}^{2}(z)$, source ranges
+$\mathcal{R}_{a}$ and $\mathcal{R}_{b}$, and their locations
+$\boldsymbol{r}_{a}$ and $\boldsymbol{r}_{b}$ in the field.  All of
+these parameters are known in a specific observing geometry such as
+that shown in Figure \ref{geo} with the exception of the turbulence
+profile $C_{n}^{2}(z)$.  A measurement of $C_{n}^{2}(z)$ is available
+from the MASS/DIMM.  Alternatively, in generating system performance
+estimates a standard $C_{n}^{2}(z)$ profile may be assumed.  Likewise,
+Equations \ref{tphase_n7} and \ref{tprphase_n7} respectively represent
+the tilt covariance and piston-removed / tilt phase cross covariance
+for two sources at arbitrary ranges and and locations within the
+field.  These quantities may be computed using the same inputs.
+
+Calculation of these covariance functions requires two numerical
+integrations over the unit circle (i.e over $\boldsymbol{\rho}_{1}$
+and $\boldsymbol{\rho}_{2}$).  Assuming this integration is performed
+using $\mathcal{N}$ samples across the pupil, then computation of
+$\left\langle \vphantom{\hat{\phi}_{a}}
+\phi_{a}\left(R\boldsymbol{\rho}_{1}\right)
+\phi_{b}\left(R\boldsymbol{\rho}_{2}\right)\right\rangle$ is an
+$\mathcal{O}(\mathcal{N}^{4})$ calculation.  Recall from Equation
+\ref{lgsotf} that calculation of the four dimensional structure
+function $D_{\rm apl}\left(\boldsymbol{r}_{1},
+\boldsymbol{r}_{2}\right)$ must be performed for
+$\mathcal{O}(\mathcal{N}^{4})$ values of $\boldsymbol{r}_{1}$ and
+$\boldsymbol{r}_{2}$, each of which requires computation of 36
+covariance functions.  This indicates that computation of the optical
+transfer function is an $\mathcal{O}(36\mathcal{N}^{8})$ process.
+Such a calculation is not a realistic proposition for general use in
+astronomical data reduction.
+
+\section{Computational Formulation}
+\label{sec:compcovariance}
+
+Tyler addresses the issue of computability by providing simplifying
+expressions for each of the integrals that appear in Equations
+\ref{prphase_n7}, \ref{tphase_n7} and \ref{tprphase_n7} .  This report
+adheres to Tyler's Geugenbauer polynomial formalism, which is
+presented in Appendix A3\cite{1994JOSAA..11..409T}.  The piston
+removed phase covariance is given by
+\begin{equation}\label{phasecovariance}
+\left\langle \phi_{a}\left(R\boldsymbol{\rho}_{1}\right)  \phi_{b}\left(R\boldsymbol{\rho}_{2}\right)\right\rangle = 
+\Xi D^{5/3} k^{2} \left\{
+\mathcal{A}_{ab}\left(\boldsymbol{\rho}_{1}\right) + 
+\mathcal{B}_{ab}\left(\boldsymbol{\rho}_{2}\right) - 
+\mathcal{C}_{ab}\left(\boldsymbol{\rho}_{1},\boldsymbol{\rho}_{2}\right) - 
+\mathcal{D}_{ab}\right\}
+\end{equation}
+and the tilt covariance is given by
+\begin{equation}\label{tiltcovariance}
+\begin{split}
+\left\langle \phi^{T}_{a}\left(R\boldsymbol{\rho}_{1}\right)  \phi^{T}_{b}\left(R\boldsymbol{\rho}_{2}\right)\right\rangle & = 
+\Xi D^{5/3} k^{2} \left\{
+\left[\boldsymbol{\rho}_{1} \cdot \boldsymbol{\rho}_{2} \right] \mathcal{E}_{ab} + 
+\mathcal{F}_{ab}\left(\boldsymbol{\rho}_{1}, \boldsymbol{\rho}_{2}\right)
+\right\} 
+\end{split}
+\end{equation}
+Finally, the cross covariance is given by
+\begin{equation}\label{crosscovariance}
+\begin{split}
+\left\langle \phi_{a}\left(R\boldsymbol{\rho}_{1}\right)  \phi^{T}_{b}\left(R\boldsymbol{\rho}_{2}\right)\right\rangle & = 
+\Xi D^{5/3} k^{2} \left\{
+\left[\boldsymbol{\rho}_{1} \cdot \boldsymbol{\rho}_{2} \right] \mathcal{G}_{ab}\left(\boldsymbol{\rho}_{1}\right) + 
+\mathcal{H}_{ab}\left(\boldsymbol{\rho}_{1}, \boldsymbol{\rho}_{2}\right) + 
+\mathcal{I}_{ab}\left(\boldsymbol{\rho}_{2}\right)
+\right\} 
+\end{split}
+\end{equation}
+In these expressions, the following definitions have been employed.
+\begin{equation}\label{caliph_A}
+\mathcal{A}_{ab}\left(\boldsymbol{\rho}_{1}\right) = 
+\int_{0}^{\mathcal{R}_{\rm min}} dz \; C_{n}^{2}\left(z\right) \left( 1 - \frac{z}{\mathcal{R}_{a}}\right)^{5/3}\; 
+\left[Q_{ab}\left(z\right)\right]^{5/3} 
+F_{1}\left(\frac{\left\vert\boldsymbol{\rho}_{1} + \boldsymbol{\Omega}_{ab}\left(z\right)\right\vert}{Q_{ab}\left(z\right)}\right)
+\end{equation}
+\begin{equation}\label{caliph_B}
+\mathcal{B}_{ab}\left(\boldsymbol{\rho}_{2}\right) = 
+\int_{0}^{\mathcal{R}_{\rm min}} dz \; C_{n}^{2}\left(z\right) \left( 1 - \frac{z}{\mathcal{R}_{a}}\right)^{5/3}\; 
+F_{1}\left(\left\vert Q_{ab}\left(z\right)\boldsymbol{\rho}_{2} - \boldsymbol{\Omega}_{ab}\left(z\right)\right\vert\right)
+\end{equation}
+\begin{equation}\label{caliph_C}
+\mathcal{C}_{ab}\left(\boldsymbol{\rho}_{1}, \boldsymbol{\rho}_{2}\right) = 
+\int_{0}^{\mathcal{R}_{\rm min}} dz \; C_{n}^{2}\left(z\right) \left( 1 - \frac{z}{\mathcal{R}_{a}}\right)^{5/3}\; 
+\left\vert\boldsymbol{\rho}_{1} - Q_{ab}\left(z\right)\boldsymbol{\rho}_{2} + \boldsymbol{\Omega}_{ab}\left(z\right)\right\vert^{5/3}
+\end{equation}
+\begin{equation}\label{caliph_D}
+\mathcal{D}_{ab} = 
+\int_{0}^{\mathcal{R}_{\rm min}} dz \; C_{n}^{2}\left(z\right) \left( 1 - \frac{z}{\mathcal{R}_{a}}\right)^{5/3}\; 
+F_{2}\left(Q_{ab}\left(z\right),\left\vert\boldsymbol{\Omega}_{ab}\left(z\right)\right\vert\right)
+\end{equation}
+\begin{equation}\label{caliph_E}
+\begin{split}
+\mathcal{E}_{ab} = 
+16 \int_{0}^{\mathcal{R}_{\rm min}} dz & \; C_{n}^{2}\left(z\right) \left( 1 - \frac{z}{\mathcal{R}_{a}}\right)^{5/3}\; 
+\left[Q_{ab}\left(z\right)\right]^{-3}
+\\ 
+& \left\{\int_{0}^{{\rm max}\left(Q_{ab}\left(z\right)-\left\vert \boldsymbol{\Omega}_{ab} \left(z\right)\right\vert,0\right)} d\rho \; \rho^{3} \; \hat{G}\left(\rho\right) + 
+\right.
+\\ 
+& 
+\quad\quad
+\frac{1}{\pi} \int^{Q_{ab}\left(z\right)+\left\vert \boldsymbol{\Omega}_{ab}\left(z\right)\right\vert}_{\left\vert Q_{ab}\left(z\right)-\left\vert \boldsymbol{\Omega}_{ab}\left(z\right)\right\vert\right\vert}
+d\rho \; \rho^{3} \; \hat{G}\left(\rho\right) L\left(\left\vert\boldsymbol{\Omega}_{ab}\left(z\right)\right\vert, \rho, Q_{ab}\left(z\right)\right) \\
+& 
+\quad\quad\quad\quad
+\left.
+\sqrt{1 - \left[L\left(\left\vert\boldsymbol{\Omega}_{ab}\left(z\right)\right\vert, \rho, Q_{ab}\left(z\right)\right)\right]^{2}}
+\vphantom{\int_{0}^{{\rm max}\left(Q_{ab}\left(z\right)-\left\vert \boldsymbol{\Omega}_{ab} \left(z\right)\right\vert,0\right)}}
+\right\} 
+\end{split}
+\end{equation}
+\begin{equation}\label{caliph_F}
+\begin{split}
+\mathcal{F}_{ab}\left(\boldsymbol{\rho}_{1}, \boldsymbol{\rho}_{2}\right) = 
+\frac{32}{\pi}& \int_{0}^{\mathcal{R}_{\rm min}} dz \; C_{n}^{2}\left(z\right) \left( 1 - \frac{z}{\mathcal{R}_{a}}\right)^{5/3}
+\left[\boldsymbol{\rho}_{1} \cdot \boldsymbol{\Omega}_{ab}\left(z\right) \right]
+\left[\boldsymbol{\rho}_{2} \cdot \boldsymbol{\Omega}_{ab}\left(z\right) \right] \\
+&
+\int^{Q_{ab}\left(z\right)+\left\vert \boldsymbol{\Omega}_{ab}\left(z\right)\right\vert}_{\left\vert Q_{ab}\left(z\right)-\left\vert \boldsymbol{\Omega}_{ab}\left(z\right)\right\vert\right\vert}
+d\rho \; \rho^{2} \; \hat{G}\left(\rho\right) 
+\left[L\left(\left\vert\boldsymbol{\Omega}_{ab}\left(z\right)\right\vert, \rho, Q_{ab}\left(z\right)\right) - \frac{\left\vert \boldsymbol{\Omega}_{ab}\left(z\right) \right\vert}{\rho}\right]\\
+& 
+\quad\quad\quad\quad\quad\quad
+\left[1 - \left[L\left(\left\vert\boldsymbol{\Omega}_{ab}\left(z\right)\right\vert, \rho, Q_{ab}\left(z\right)\right)\right]^{2}\right]^{1/2}
+\end{split}
+\end{equation}
+\begin{equation}\label{caliph_G}
+\mathcal{G}_{ab}\left(\boldsymbol{\rho}_{1}\right) = 
+4 \int_{0}^{\mathcal{R}_{\rm min}} dz \; C_{n}^{2}\left(z\right) \left( 1 - \frac{z}{\mathcal{R}_{a}}\right)^{5/3}\; 
+\left[Q_{ab}\left(z\right)\right]^{2/3} 
+\hat{G}\left(\left\vert \frac{\boldsymbol{\rho}_{1} + \boldsymbol{\Omega}_{ab}\left(z\right)}{Q_{ab}\left(z\right)}\right\vert\right)
+\end{equation}
+\begin{equation}\label{caliph_H}
+\mathcal{H}_{ab}\left(\boldsymbol{\rho}_{1}, \boldsymbol{\rho}_{2}\right) = 
+4 \int_{0}^{\mathcal{R}_{\rm min}} dz \; C_{n}^{2}\left(z\right) \left( 1 - \frac{z}{\mathcal{R}_{a}}\right)^{5/3}\; 
+\left[Q_{ab}\left(z\right)\right]^{2/3} \left[\boldsymbol{\rho}_{1}\cdot\boldsymbol{\Omega}_{ab}\left(z\right)\right]
+\hat{G}\left(\left\vert \frac{\boldsymbol{\rho}_{2} + \boldsymbol{\Omega}_{ab}\left(z\right)}{Q_{ab}\left(z\right)}\right\vert\right)
+\end{equation}
+\begin{equation}\label{caliph_I}
+\begin{split}
+\mathcal{I}_{ab}\left(\boldsymbol{\rho}_{2}\right) = & 
+4 \int_{0}^{\mathcal{R}_{\rm min}} dz \; C_{n}^{2}\left(z\right) \left( 1 - \frac{z}{\mathcal{R}_{a}}\right)^{5/3}\; 
+\frac{\left[\boldsymbol{\rho}_{2}\cdot\boldsymbol{\Omega}_{ab}\left(z\right)\right] }{\pi \left[Q_{ab}\left(z\right)\right]^{1/3} 
+\left\vert\boldsymbol{\Omega}_{ab}\left(z\right)\right\vert} \\
+& 
+\quad\quad\quad\quad\quad\quad
+\int^{Q_{ab}\left(z\right) +\left\vert \boldsymbol{\Omega}_{ab}\left(z\right)\right\vert}_{\left\vert Q_{ab}\left(z\right) - \left\vert\boldsymbol{\Omega}_{ab}\left(z\right)\right\vert\right\vert}
+d\rho \rho^{2} \left\{1 - \left[L\left(\left\vert\boldsymbol{\Omega}_{ab}\left(z\right)\right\vert, \rho, Q_{ab}\left(z\right)\right)\right]^{2}\right\}^{1/2} 
+\hat{G}\left(\rho\right)
+\end{split}
+\end{equation}
+
+The following definitions have been employed in Equations \ref{caliph_A} - \ref{caliph_H}.
+\begin{equation}\label{F_1_eqn}
+F_{1}\left(x\right) = 
+\left\{
+\begin{aligned}
+\frac{6}{11}\; \vphantom{F}_{2}F_{1}\left(-\frac{11}{6}, -\frac{5}{6};1; x^{2}\right) & \quad x\le 1 \\
+x^{5/3}\; \vphantom{F}_{2}F_{1}\left(-\frac{5}{6}, -\frac{5}{6};2; x^{-2}\right)        & \quad x>1
+\end{aligned}
+\right.
+\end{equation}
+\begin{equation}\label{F_2_eqn}
+F_{2}\left(\alpha, x\right) = \frac{2}{\pi \alpha^{2}} \int_{0}^{1+\alpha} d\rho K_{1}\left(\rho, \alpha\right)H\left(\rho, x\right)
+\end{equation}
+\begin{equation}\label{K_1_eqn}
+K_{1}\left(\rho,\alpha\right) = 
+\left\{
+\begin{aligned}
+&
+\pi \alpha^{2} & \left\vert\rho\right\vert \le 1-\alpha \\
+&
+\begin{split}
+\cos^{-1}&\left(t_{0}\right) - t_{0}\sqrt{1-t_{0}} + \\
+&\alpha^{2}\left[\cos^{-1}\left(s_{0}/\alpha\right) - s_{0}/\alpha\sqrt{1-s_{0}/\alpha^{2}}\right] 
+\end{split}
+& \quad 1 - \alpha \le \left\vert\rho\right\vert  \le 1+\alpha \\
+\\
+& 0 & {\rm Otherwise}
+\end{aligned}
+\right.
+\end{equation}
+\begin{equation}\label{s0_t0_eqn}
+\begin{aligned}
+s_{0} = \frac{\rho}{2} - \frac{1 - \alpha^{2}}{2\rho} \quad & \quad t_{0} = \frac{\rho}{2} + \frac{1 - \alpha^{2}}{2\rho} 
+\end{aligned}
+\end{equation}
+\begin{equation}\label{H_eqn}
+H\left(\rho,x\right) = 
+\left\{
+\begin{aligned}
+\rho^{8/3} \vphantom{F}_{2}F_{1}\left(-\frac{5}{6}, -\frac{5}{6};1; \left(x/\rho\right)^{-2}\right)        & \quad x\le \rho \\
+\rho x^{5/3} \vphantom{F}_{2}F_{1}\left(-\frac{5}{6}, -\frac{5}{6};1; \left(\rho/x\right)^{-2}\right)        & \quad x > \rho
+\end{aligned}
+\right.
+\end{equation}
+\begin{equation}\label{G_hat_eqn}
+\hat{G}\left(\alpha\right) = 
+\left\{
+\begin{aligned}
+-\frac{5}{11} \vphantom{F}_{2}F_{1}\left(-\frac{11}{6}, \frac{1}{6};2; \alpha^{2}\right)              & \quad \alpha\le 1 \\
+-\frac{5}{12} \alpha^{-1/3} \vphantom{F}_{2}F_{1}\left(-\frac{5}{6}, \frac{1}{6};3; \alpha^{-2}\right)  & \quad \alpha > 1
+\end{aligned}
+\right.
+\end{equation}
+\begin{equation}
+L\left(a, b, c\right) = \frac{a^{2} + b^{2} - c^{2}}{2 a b}
+\end{equation}
+
+The above expressions appear complex, but provide significant
+computational advantage over Equation \ref{prphase_n7}.  The
+calculation of Equations \ref{caliph_A} - \ref{caliph_I} require at
+most the calculation of a one dimensional integral over
+$C_{n}^{2}(z)$, a one dimensional integral over another variable, and
+computation of a hypergeometric function.  The latter computation is
+easily terminated when contributions of successive hypergeometric
+terms fall below a fixed precision.  This is vastly more
+computationally efficient than the $\mathcal{O}(\mathcal{N}^{4})$
+calculation required to compute Equations \ref{prphase_n7} -
+\ref{tprphase_n7} directly.
+
+The form of Equations \ref{phasecovariance} - \ref{crosscovariance}
+permit further computational advantages.  Six of the nine expressions
+display a reduced dependence on $\boldsymbol{\rho}_{1}$ and/or
+$\boldsymbol{\rho}_{2}$, and may be precomputed and stored for use in
+computing the covariance functions over the pupil plane.
+
+In laser guide star adaptive optics systems, one is interested in
+computing the field dependent target optical transfer function
+$OTF_{\rm trg}\left(\boldsymbol{r}\right)$ assuming fixed locations of
+the tip tilt and laser guide stars and for a specific turbulence
+profile.  For example, if one was interested in modelling a crowded
+field imaged by a science camera, one would wish to compute $OTF_{\rm
+  trg}\left(\boldsymbol{r}\right)$ at many locations within the field
+of view.  In such an application, one would precompute the piston
+removed phase and tilt covariance functions involving the laser and
+tip tilt star that appear in Equation \ref{lgsstrfnexpansion}.  One
+would then iterate over locations in the field, computing only the
+terms in in Equation \ref{lgsstrfnexpansion} that depend on target
+location.
+
+
+\section{Anisoplanatic Structure Function}
+\label{sec:strfn}
+
+%\phi_{\rm trg}\left(\boldsymbol{r}\right)
+%\phi^{T}_{\rm trg}\left(\boldsymbol{r}\right) 
+%\phi^{T}_{\rm ttgs}\left(\boldsymbol{r}\right)
+%\phi_{\rm lgs}\left(\boldsymbol{r}\right)
+%\phi^{T}_{\rm lgs}\left(\boldsymbol{r}\right)
+
+For computational purposes it is useful to explicitly expand the
+structure function in Equation \ref{lgsstrfnexpansion} and group like
+terms, yielding
+\begin{equation}\label{strfn_x}
+\small
+\begin{aligned}
+D_{\phi_{\rm apl}}&(\boldsymbol{r}_{1}, \boldsymbol{r}_{2}) = 
+\\ &
+\left\langle\left\{\phi_{\rm trg}\left(\boldsymbol{r}_{1}\right)\right\}^{2}\right\rangle +
+\left\langle\left\{\phi_{\rm trg}\left(\boldsymbol{r}_{2}\right)\right\}^{2}\right\rangle -
+2\left\langle\phi_{\rm trg}\left(\boldsymbol{r}_{1}\right) \phi_{\rm trg}\left(\boldsymbol{r}_{2}\right)\right\rangle + 
+\\ & 
+\left\langle\left\{\phi^{T}_{\rm ttgs}\left(\boldsymbol{r}_{1}\right)\right\}^{2}\right\rangle  + 
+\left\langle\left\{\phi^{T}_{\rm ttgs}\left(\boldsymbol{r}_{2}\right) \right\}^{2}\right\rangle -
+2\left\langle\phi^{T}_{\rm ttgs}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{\rm ttgs}\left(\boldsymbol{r}_{2}\right)\right\rangle +
+\\ & 
+\left\langle\left\{ \phi_{\rm lgs}\left(\boldsymbol{r}_{1}\right)\right\}^{2}\right\rangle +
+\left\langle\left\{ \phi_{\rm lgs}\left(\boldsymbol{r}_{2}\right)\right\}^{2}\right\rangle -
+2\left\langle\phi_{\rm lgs}\left(\boldsymbol{r}_{1}\right) \phi_{\rm lgs}\left(\boldsymbol{r}_{2}\right)\right\rangle +
+\\ & 
+\left\langle\left\{ \phi^{T}_{\rm lgs}\left(\boldsymbol{r}_{1}\right)\right\}^{2}\right\rangle  +
+\left\langle\left\{ \phi^{T}_{\rm lgs}\left(\boldsymbol{r}_{2}\right)\right\}^{2}\right\rangle - 
+2\left\langle\phi^{T}_{\rm lgs}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{\rm lgs}\left(\boldsymbol{r}_{2}\right)\right\rangle +
+\\ & 
+2\left[-\left\langle\phi_{\rm trg}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{\rm ttgs}\left(\boldsymbol{r}_{1}\right)\right\rangle + 
+\left\langle\phi_{\rm trg}\left(\boldsymbol{r}_{2}\right) \phi^{T}_{\rm ttgs}\left(\boldsymbol{r}_{2}\right)\right\rangle +
+\left\langle\phi_{\rm trg}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{\rm ttgs}\left(\boldsymbol{r}_{2}\right)\right\rangle +
+\left\langle\phi_{\rm trg}\left(\boldsymbol{r}_{2}\right) \phi^{T}_{\rm ttgs}\left(\boldsymbol{r}_{1}\right)\right\rangle\right] +
+\\ & 
+2\left[-\left\langle\phi_{\rm trg}\left(\boldsymbol{r}_{1}\right) \phi_{\rm lgs}\left(\boldsymbol{r}_{1}\right)\right\rangle + 
+\left\langle\phi_{\rm trg}\left(\boldsymbol{r}_{2}\right) \phi_{\rm lgs}\left(\boldsymbol{r}_{2}\right)\right\rangle +
+\left\langle\phi_{\rm trg}\left(\boldsymbol{r}_{1}\right) \phi_{\rm lgs}\left(\boldsymbol{r}_{2}\right)\right\rangle +
+\left\langle\phi_{\rm trg}\left(\boldsymbol{r}_{2}\right) \phi_{\rm lgs}\left(\boldsymbol{r}_{1}\right)\right\rangle\right] +
+\\ & 
+2\left[\left\langle\phi_{\rm trg}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{\rm lgs}\left(\boldsymbol{r}_{1}\right)\right\rangle -
+\left\langle\phi_{\rm trg}\left(\boldsymbol{r}_{2}\right) \phi^{T}_{\rm lgs}\left(\boldsymbol{r}_{2}\right)\right\rangle -
+\left\langle\phi_{\rm trg}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{\rm lgs}\left(\boldsymbol{r}_{2}\right)\right\rangle -
+\left\langle\phi_{\rm trg}\left(\boldsymbol{r}_{2}\right) \phi^{T}_{\rm lgs}\left(\boldsymbol{r}_{1}\right)\right\rangle\right] + 
+\\ & 
+2\left[\left\langle\phi^{T}_{\rm ttgs}\left(\boldsymbol{r}_{1}\right) \phi_{\rm lgs}\left(\boldsymbol{r}_{1}\right)\right\rangle - 
+\left\langle\phi^{T}_{\rm ttgs}\left(\boldsymbol{r}_{2}\right) \phi_{\rm lgs}\left(\boldsymbol{r}_{2}\right)\right\rangle -
+\left\langle\phi^{T}_{\rm ttgs}\left(\boldsymbol{r}_{1}\right) \phi_{\rm lgs}\left(\boldsymbol{r}_{2}\right)\right\rangle -
+\left\langle\phi^{T}_{\rm ttgs}\left(\boldsymbol{r}_{2}\right) \phi_{\rm lgs}\left(\boldsymbol{r}_{1}\right)\right\rangle\right] + 
+\\ & 
+2\left[-\left\langle\phi^{T}_{\rm ttgs}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{\rm lgs}\left(\boldsymbol{r}_{1}\right)\right\rangle + 
+\left\langle\phi^{T}_{\rm ttgs}\left(\boldsymbol{r}_{2}\right) \phi^{T}_{\rm lgs}\left(\boldsymbol{r}_{2}\right)\right\rangle +
+\left\langle\phi^{T}_{\rm ttgs}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{\rm lgs}\left(\boldsymbol{r}_{2}\right)\right\rangle +
+\left\langle\phi^{T}_{\rm ttgs}\left(\boldsymbol{r}_{2}\right) \phi^{T}_{\rm lgs}\left(\boldsymbol{r}_{1}\right)\right\rangle\right] +
+\\ & 
+2\left[-\left\langle\phi_{\rm lgs}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{\rm lgs}\left(\boldsymbol{r}_{1}\right)\right\rangle + 
+\left\langle\phi_{\rm lgs}\left(\boldsymbol{r}_{2}\right) \phi^{T}_{\rm lgs}\left(\boldsymbol{r}_{2}\right)\right\rangle +
+\left\langle\phi_{\rm lgs}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{\rm lgs}\left(\boldsymbol{r}_{2}\right)\right\rangle +
+\left\langle\phi_{\rm lgs}\left(\boldsymbol{r}_{2}\right) \phi^{T}_{\rm lgs}\left(\boldsymbol{r}_{1}\right)\right\rangle\right]
+\end{aligned}
+\end{equation}
+This equation naturally lends itself to a C++ programming interface in
+which a phase covariance function such as $\left\langle\phi^{T}_{\rm
+  ttgs}\left(\boldsymbol{r}_{1}\right) \phi^{T}_{\rm
+  ttgs}\left(\boldsymbol{r}_{2}\right)\right\rangle$ is represented as
+an instance of a class {\bf phase\_covariance}, with a member function
+\\ 
+\indent {\bf double phase\_covariance::covariance(vec r\_1, vec r\_2)}
+\\
+The class instance may store partial calculations specific to the
+source location, aperture diameter, and $C_{n}^{2}$ profile.  For
+example, the value of $\mathcal{D}_{ab}$ may be computed at
+instantiation, while the values of $\mathcal{A}_{ab}\left(\rho\right)$
+and $\mathcal{B}_{ab}\left(\rho\right)$ may be computed as a function
+of $\rho$ upon first invocation of the above member function.
+Likewise, classes {\bf tilt\_covariance} and {\bf phase\_tilt\_covariance}
+may represent the other types of covariance functions in Equation
+\ref{strfn_x}.  
+
+%\section{Example: Differential Phase Variance}
+%\label{sec:variance}
+
+%\begin{equation}\label{uncomp_variance_eqn}
+%\end{equation}
+
+%\begin{equation}\label{uncomp_tr_variance_eqn}
+%\end{equation}
+
+%\begin{equation}\label{ngs_variance_eqn}
+%\end{equation}
+
+%\begin{equation}\label{ngs_tr_variance_eqn}
+%\end{equation}
+
+%\begin{equation}\label{lgs_variance_eqn}
+%\end{equation}
+
+%\begin{equation}\label{lgs_tr_variance_eqn}
+%\end{equation}
+
+
+%\section{Example: Structure Functions}
+%\label{sec:strfn}
+
+
+
+%\section{Example: Point Spread Functions}
+%\label{sec:psf}
+
+
+
+
+%\section{IDL Bindings}
+%\label{sec:idl}
