@@ -129,6 +129,8 @@ def get_figure_string(filename, localdir, inputdir, flatten=False, copyto=False)
         if len(optsjson) != 0:
             raise ValueError('Entries in "{0}" that were not understood: {1}'.format(optsfn, optsjson))
 
+    # sizefn = os.path.join(localdir, figdir, 'size.tex')
+        
     figopts.update(locals())
     return FIGURE_TEMPLATE.format(**figopts)
 
