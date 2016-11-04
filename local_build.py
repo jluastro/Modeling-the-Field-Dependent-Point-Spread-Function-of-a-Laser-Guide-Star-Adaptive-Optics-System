@@ -37,9 +37,11 @@ MAIN_TEMPLATE = r"""
 
 {headerin}
 
-\begin{{document}}
-
 {titlecontent}
+
+{authorsin}
+
+\begin{{document}}
 
 {sectioninputs}
 
@@ -175,6 +177,10 @@ def build_authorea_latex(localdir, builddir, latex_exec, bibtex_exec, outname,
         headerin = get_input_string('header', get_in_path(localdir, builddir, pathtype), flatten=flatten)
     else:
         headerin = ''
+    if os.path.exists('authors.tex'):
+        authorsin = get_input_string('authors', get_in_path(localdir, builddir, pathtype), flatten=flatten)
+    else:
+        authorsin = ''
 
     if not headerin and not preamblein:
         print("Neither preable nor header found!  Proceeding, but that's rather weird")
@@ -206,8 +212,9 @@ def build_authorea_latex(localdir, builddir, latex_exec, bibtex_exec, outname,
                 pass # skip any that have been processed above
             elif ls in ('abstract.tex'):
                 # add abstract to title content
-                titlein = get_input_string('abstract', get_in_path(localdir, builddir, pathtype), flatten=flatten)
-                titlecontent.append(r'\begin{abstract}' + titlein  + '\end{abstract}')
+                abstractin = get_input_string('abstract', get_in_path(localdir, builddir, pathtype), flatten=flatten)
+                sectioninputs.append(r'\maketitle' + '\n')
+                sectioninputs.append(r'\begin{abstract}' + abstractin  + '\end{abstract}')
             elif ls.endswith('.html') or ls.endswith('.htm'):
                 pass  # html files aren't latex-able
             elif ls.startswith('figures'):
