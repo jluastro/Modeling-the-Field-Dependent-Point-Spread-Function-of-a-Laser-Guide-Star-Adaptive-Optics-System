@@ -1,3 +1,7 @@
 abstract.tex
 sec_introduction.tex
+sec_psf_formulation_A.tex
 figures/guide_star_schematic/guide_star_schematic.png
+sec_psf_formulation_B.tex
+
+
