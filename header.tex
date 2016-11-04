@@ -4,10 +4,11 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{color}
-\usepackage{comment}
 
-\specialcomment{notes}{\begingroup\sffamily\color{red}}{\endgroup}
-\includecomment{comment}
+% \usepackage{comment}
+% \specialcomment{notes}{\begingroup\sffamily\color{red}}{\endgroup}
+% \includecomment{comment}
+\newenvironment{notes}{\color{red}}{}
 
 % matthew macros
 \def\procspie{Proc. SPIE}
