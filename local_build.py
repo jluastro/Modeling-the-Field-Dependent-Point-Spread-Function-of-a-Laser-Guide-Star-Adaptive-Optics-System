@@ -129,7 +129,16 @@ def get_figure_string(filename, localdir, inputdir, flatten=False, copyto=False)
         if len(optsjson) != 0:
             raise ValueError('Entries in "{0}" that were not understood: {1}'.format(optsfn, optsjson))
 
-    # sizefn = os.path.join(localdir, figdir, 'size.tex')
+    sizefn = os.path.join(localdir, figdir, 'size.tex')
+    if os.path.exists(sizefn):
+        _size = open(sizefn, 'r')
+        sizeIn = _size.read()
+
+        # Split on \n to get heigh/width spearately
+        size_split = sizeIn.split('\\n')
+        for ii in range(len(size_split)):
+            size_split_again = size_split[ii].split("=")
+            figopts[size_split_again[0]] = size_split_again[1] + 'px'
         
     figopts.update(locals())
     return FIGURE_TEMPLATE.format(**figopts)
