@@ -1,0 +1,20 @@
+\appendix
+\renewcommand{\thesection}{\Alph{section}}
+\numberwithin{equation}{section}
+
+\section{Expressions for the Two-Point Covariance Functions Assuming Kolmogorov Turbulence}
+\label{app:kolmogorov_deriv}
+
+Wavefront phase aberrations arise from the passage of light through
+the atmosphere as this light encounters variations in the index of
+refraction $n\left(\vec{r},z\right)$.  Consider a geometric ray
+traversing the path between a source at range $\mathcal{R}_{a}$ and
+lateral offset $\vec{r}_{a}$ and a location in the pupil plane
+denoted by $\vec{r}$, as shown in Figure
+\ref{fig:r_vector_schematic}.  The total phase aberration is given by the integral
+along the geometric ray.
+\begin{equation}\label{eqn:totalphase_n}
+\hat{\phi}_{a}\left(\vec{r}\right) = k \int_{0}^{\mathcal{R}_{a}} dz \; 
+n\left(\vec{r} \; \frac{1-z}{\mathcal{R}_{a}} + \vec{r}_{a} \;
+  \frac{z}{\mathcal{R}_{a}}, \;z\right)
+\end{equation}
