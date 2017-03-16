@@ -5,8 +5,8 @@ Equation \ref{eqn:totalphase_n} over the telescope aperture.
 \int d\vec{r}^{\;\prime} \; 
 W \left( \frac{\vec{r}^{\;\prime}}{R} \right) \;
 n
-\left( \vec{r}^{\;\prime} \; \frac{1-z}{\mathcal{R}_{a}} + 
-\vec{r}_{a} \; \frac{z}{\mathcal{R}_{a}}, \; z \right)
+\left( \vec{r}^{\;\prime} \left[ 1 - \frac{z}{\mathcal{R}_{a}} \right] + 
+\vec{r}_{a} \left[ \frac{z}{\mathcal{R}_{a}} \right], \; z \right)
 \end{equation}
 The piston removed component of the wavefront phase is then
 \begin{equation}\label{eqn:prphase_n}
@@ -20,8 +20,9 @@ The tilt is given by the coordinate-weighted average of Equation
 \int d\vec{r}^{\;\prime} \; \vec{r}^{\;\prime} \;
 W \left( \frac{\vec{r}^{\;\prime}}{R} \right) \;
 n
-\left( \vec{r}^{\;\prime} \; \frac{1-z}{\mathcal{R}_{a}} + 
-\vec{r}_{a} \; \frac{z}{\mathcal{R}_{a}}, \;z \right)
+\left( \vec{r}^{\;\prime} \left[ 1 - \frac{z}{\mathcal{R}_{a}} \right]
+ + 
+\vec{r}_{a} \left[ \frac{z}{\mathcal{R}_{a}} \right], \;z \right)
 \end{aligned}
 \end{equation}
 Definition of this quantity is often confusing.  There is a
@@ -39,13 +40,14 @@ This report employs the one-axis one-sigma convention.
 \end{notes}
 To define terms and demonstrate that the coefficient in
 Equation \ref{eqn:tilt_n} is correct, consider a hypothetical index of
-refraction function $n\left[\vec{r},z\right] = \alpha r \cos
-\theta \delta\left(z\right)$, where $\delta\left(z\right)$ is the
-Kronecker delta function
+refraction function $n(\vec{r}, \;z) = \alpha r \cos
+\theta \;\delta\left(z\right)$, where $\delta\left(z\right)$ is the
+Kronecker delta function.
 \begin{notes}
-[Do we need this example here?]
+[Do we need this example here? What is $\theta$ in the $n$ equation?
+What coordinates are we in? What happened to our 1 - z/R expressions? ]
 \end{notes}
-.  Equation \ref{eqn:tilt_n} should measure the
+Equation \ref{eqn:tilt_n} should measure the
 angular tilt coefficient $\alpha$, so that $\vec{\theta} =
 \left(\theta_{x}, \theta_{y}\right) = \left(\alpha, 0\right)$.  We
 have
@@ -60,7 +62,8 @@ have
 \right\}\\
 & = 
 \frac{4}{\pi R^{4}} \int_{0}^{\mathcal{R}_{a}} dz 
-\int d\vec{r}^{\prime} \vec{r}^{\prime} W(\vec{r}^{\prime}/R) \; n\left[\vec{r},z\right] \\
+\int d\vec{r}^{\;\prime} \vec{r}^{\;\prime} W(\vec{r}^{\;\prime}/R) \;
+n(\vec{r}^{\;\prime}, \;z) \\
 & = 
 \frac{4}{\pi R^{4}} \int_{0}^{\mathcal{R}_{a}} dz \delta\left(z\right)
 \int_{0}^{R} r dr \int_{0}^{2\pi} d\theta 
@@ -109,24 +112,24 @@ covariance function is
 \begin{aligned}
 &\left\langle \vphantom{\hat{\phi}_{a}} \phi_{a}\left(\vec{r}_{1}\right) \phi_{b}\left(\vec{r}_{2}\right)\right\rangle = \\
 &\quad\quad\quad\quad
-\frac{k^{2}}{\pi^{2}R^{4}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\vec{r}^{\prime}_{1}d\vec{r}^{\prime}_{2} W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R) \\
+\frac{k^{2}}{\pi^{2}R^{4}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\vec{r}^{\;\prime}_{1}d\vec{r}^{\;\prime}_{2} W(\vec{r}^{\;\prime}_{1}/R) W(\vec{r}^{\;\prime}_{2}/R) \\
 &\quad\quad\quad\quad\quad\quad
-\left\{\vphantom{\vec{r}^{\prime}_{1}}
+\left\{\vphantom{\vec{r}^{\;\prime}_{1}}
 \left\langle n\left[\vec{r}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]
  n\left[\vec{r}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle\right. -
 \\
 &\quad\quad\quad\quad\quad\quad
-\left\langle n\left[\vec{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{2}\right]
+\left\langle n\left[\vec{r}^{\;\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{2}\right]
  n\left[\vec{r}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle -
 \\
 &\quad\quad\quad\quad\quad\quad
 \left\langle n\left[\vec{r}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]
- n\left[\vec{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle +
+ n\left[\vec{r}^{\;\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle +
 \\
 &\quad\quad\quad\quad\quad\quad
 \left.
-\left\langle n\left[\vec{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]
- n\left[\vec{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle
+\left\langle n\left[\vec{r}^{\;\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]
+ n\left[\vec{r}^{\;\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle
 \right\}
 \end{aligned}
 \end{equation}
@@ -135,13 +138,13 @@ The tilt covariance function is
 \begin{aligned}
 &\left\langle \phi^{T}_{a}\left(\vec{r}_{1}\right) \phi^{T}_{b}\left(\vec{r}_{2}\right)\right\rangle = \\
 &\quad\quad\quad\quad
-\frac{16 k^{2}}{\pi^{2}R^{8}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\vec{r}^{\prime}_{1}d\vec{r}^{\prime}_{2} W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R)
-\left(\vec{r}_{1} \cdot \vec{r}^{\prime}_{1}\right)
-\left(\vec{r}_{2} \cdot \vec{r}^{\prime}_{2}\right)
+\frac{16 k^{2}}{\pi^{2}R^{8}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\vec{r}^{\;\prime}_{1}d\vec{r}^{\;\prime}_{2} W(\vec{r}^{\;\prime}_{1}/R) W(\vec{r}^{\;\prime}_{2}/R)
+\left(\vec{r}_{1} \cdot \vec{r}^{\;\prime}_{1}\right)
+\left(\vec{r}_{2} \cdot \vec{r}^{\;\prime}_{2}\right)
 \\
 &\quad\quad\quad\quad\quad\quad
-\left\langle n\left[\vec{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]
- n\left[\vec{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle
+\left\langle n\left[\vec{r}^{\;\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]
+ n\left[\vec{r}^{\;\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle
 \end{aligned}
 \end{equation}
 Finally, the covariance between the tilt and piston removed phase is given by 
@@ -149,19 +152,19 @@ Finally, the covariance between the tilt and piston removed phase is given by
 \begin{aligned}
 &\left\langle \phi_{a}\left(\vec{r}_{1}\right) \phi^{T}_{b}\left(\vec{r}_{2}\right)\right\rangle = \\
 &\quad\quad\quad\quad
-\frac{4 k^{2}}{\pi^{2}R^{6}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\vec{r}^{\prime}_{1}d\vec{r}^{\prime}_{2} W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R)
-\left(\vec{r}_{2} \cdot \vec{r}^{\prime}_{2}\right)
+\frac{4 k^{2}}{\pi^{2}R^{6}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\vec{r}^{\;\prime}_{1}d\vec{r}^{\;\prime}_{2} W(\vec{r}^{\;\prime}_{1}/R) W(\vec{r}^{\;\prime}_{2}/R)
+\left(\vec{r}_{2} \cdot \vec{r}^{\;\prime}_{2}\right)
 \\
 &\quad\quad\quad\quad\quad\quad
 \left\{
 \left\langle n\left[\vec{r}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]
- n\left[\vec{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle - 
+ n\left[\vec{r}^{\;\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle - 
 \right.
 \\
 &\quad\quad\quad\quad\quad\quad
 \left.
-\left\langle n\left[\vec{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]
- n\left[\vec{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle
+\left\langle n\left[\vec{r}^{\;\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]
+ n\left[\vec{r}^{\;\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle
 \right\}
 \end{aligned}
 \end{equation}
@@ -203,14 +206,14 @@ functions.  We can rewrite Equation \ref{eqn:prphase_n} in a form that
 will permit use of Equation \ref{eqn:komolgorov} via the expression
 \begin{equation}\label{eqn:simplify}
 \begin{split}
-&\left\langle \left\{n\left[\vec{r}_{1},z_{1}\right] - n\left[\vec{r}^{\prime}_{1},z_{1}\right]\right\}n\left[\vec{r}_{2},z_{2}\right]\right\rangle -
-\left\langle \left\{n\left[\vec{r}_{1},z_{1}\right] - n\left[\vec{r}^{\prime}_{1},z_{1}\right]\right\}n\left[\vec{r}^{\prime}_{2},z_{2}\right]\right\rangle = \\
+&\left\langle \left\{n\left[\vec{r}_{1},z_{1}\right] - n\left[\vec{r}^{\;\prime}_{1},z_{1}\right]\right\}n\left[\vec{r}_{2},z_{2}\right]\right\rangle -
+\left\langle \left\{n\left[\vec{r}_{1},z_{1}\right] - n\left[\vec{r}^{\;\prime}_{1},z_{1}\right]\right\}n\left[\vec{r}^{\;\prime}_{2},z_{2}\right]\right\rangle = \\
 &\quad\quad\quad\quad\quad\quad
 -\frac{1}{2} \left(\left\langle \left\{n\left[\vec{r}_{1},z_{1}\right] - n\left[\vec{r}_{2},z_{2}\right]\right\}^{2}\right\rangle - 
-\left\langle \left\{n\left[\vec{r}^{\prime}_{1},z_{1}\right] - n\left[\vec{r}_{2},z_{2}\right]\right\}^{2}\right\rangle\right) \\
+\left\langle \left\{n\left[\vec{r}^{\;\prime}_{1},z_{1}\right] - n\left[\vec{r}_{2},z_{2}\right]\right\}^{2}\right\rangle\right) \\
 &\quad\quad\quad\quad\quad\quad
-+\frac{1}{2} \left(\left\langle \left\{n\left[\vec{r}_{1},z_{1}\right] - n\left[\vec{r}^{\prime}_{2},z_{2}\right]\right\}^{2}\right\rangle - 
-\left\langle \left\{n\left[\vec{r}^{\prime}_{1},z_{1}\right] - n\left[\vec{r}^{\prime}_{2},z_{2}\right]\right\}^{2}\right\rangle\right) \\
++\frac{1}{2} \left(\left\langle \left\{n\left[\vec{r}_{1},z_{1}\right] - n\left[\vec{r}^{\;\prime}_{2},z_{2}\right]\right\}^{2}\right\rangle - 
+\left\langle \left\{n\left[\vec{r}^{\;\prime}_{1},z_{1}\right] - n\left[\vec{r}^{\;\prime}_{2},z_{2}\right]\right\}^{2}\right\rangle\right) \\
 \end{split}
 \end{equation}
 This substitution yields
@@ -218,21 +221,21 @@ This substitution yields
 \begin{aligned}
 & \left\langle \vphantom{\hat{\phi}_{a}} \phi_{a}\left(\vec{r}_{1}\right) \phi_{b}\left(\vec{r}_{2}\right)\right\rangle = \\
 &\quad\quad\quad\quad
--\frac{k^{2}}{2\pi^{2}R^{4}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\vec{r}^{\prime}_{1}d\vec{r}^{\prime}_{2}  W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R)\\
+-\frac{k^{2}}{2\pi^{2}R^{4}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\vec{r}^{\;\prime}_{1}d\vec{r}^{\;\prime}_{2}  W(\vec{r}^{\;\prime}_{1}/R) W(\vec{r}^{\;\prime}_{2}/R)\\
 &\quad\quad\quad\quad\quad\quad
 \left(
 \left\langle \left\{n\left[\vec{r}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right] - 
  n\left[\vec{r}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\}^{2} \right\rangle\right. - \\
 &\quad\quad\quad\quad\quad\quad
-\left\langle \left\{n\left[\vec{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right] - 
+\left\langle \left\{n\left[\vec{r}^{\;\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right] - 
  n\left[\vec{r}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\}^{2} \right\rangle - \\
 &\quad\quad\quad\quad\quad\quad
 \left\langle \left\{n\left[\vec{r}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right] - 
- n\left[\vec{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\}^{2} \right\rangle + \\
+ n\left[\vec{r}^{\;\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\}^{2} \right\rangle + \\
 &\quad\quad\quad\quad\quad\quad
 \left.
-\left\langle \left\{n\left[\vec{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right] - 
- n\left[\vec{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\}^{2} \right\rangle\right) \\
+\left\langle \left\{n\left[\vec{r}^{\;\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right] - 
+ n\left[\vec{r}^{\;\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\}^{2} \right\rangle\right) \\
 \end{aligned}
 \end{equation}
 Using Equation \ref{eqn:komolgorov}, this expression may be rewritten as
@@ -240,8 +243,8 @@ Using Equation \ref{eqn:komolgorov}, this expression may be rewritten as
 \begin{aligned}
 & \left\langle \vphantom{\hat{\phi}_{a}} \phi_{a}\left(\vec{r}_{1}\right) \phi_{b}\left(\vec{r}_{2}\right)\right\rangle = \\
 &\quad\quad\quad\quad
--\frac{k^{2}}{2\pi^{2}R^{4}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\vec{r}^{\prime}_{1}d\vec{r}^{\prime}_{2}  
-W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R) C_{n}^{2}\left(\frac{z_{1} + z_{2}}{2}\right) \\
+-\frac{k^{2}}{2\pi^{2}R^{4}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\vec{r}^{\;\prime}_{1}d\vec{r}^{\;\prime}_{2}  
+W(\vec{r}^{\;\prime}_{1}/R) W(\vec{r}^{\;\prime}_{2}/R) C_{n}^{2}\left(\frac{z_{1} + z_{2}}{2}\right) \\
 &\quad\quad\quad\quad\quad\quad
 \left(
 \left[ \left\vert \vec{r}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a} - 
@@ -249,17 +252,17 @@ W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R) C_{n}^{2}\left(\frac{z_{1} +
 \left\vert z_{1} - z_{2} \right\vert^{2}\right]^{1/3}
 \right. -\\
 & \quad\quad\quad\quad\quad\quad
-\left[ \left\vert \vec{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a} - 
+\left[ \left\vert \vec{r}^{\;\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a} - 
 \vec{r}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) - \vec{r}_{b} z_{2}/\mathcal{R}_{b}\right\vert^{2} + 
 \left\vert z_{1} - z_{2} \right\vert^{2}\right]^{1/3} - \\
 & \quad\quad\quad\quad\quad\quad
 \left[ \left\vert \vec{r}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a} - 
-\vec{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) - \vec{r}_{b} z_{2}/\mathcal{R}_{b}\right\vert^{2} + 
+\vec{r}^{\;\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) - \vec{r}_{b} z_{2}/\mathcal{R}_{b}\right\vert^{2} + 
 \left\vert z_{1} - z_{2} \right\vert^{2}\right]^{1/3} + \\
 & \quad\quad\quad\quad\quad\quad
 \left.
-\left[ \left\vert \vec{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a} - 
-\vec{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) - \vec{r}_{b} z_{2}/\mathcal{R}_{b}\right\vert^{2} + 
+\left[ \left\vert \vec{r}^{\;\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a} - 
+\vec{r}^{\;\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) - \vec{r}_{b} z_{2}/\mathcal{R}_{b}\right\vert^{2} + 
 \left\vert z_{1} - z_{2} \right\vert^{2}\right]^{1/3}\right)
 \end{aligned}
 \end{equation}
@@ -267,23 +270,23 @@ W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R) C_{n}^{2}\left(\frac{z_{1} +
 One may cast Equation \ref{eqn:tphase_n} into a similar form through the relationship
 \begin{equation}
 \begin{aligned}
-&  \left\langle n\left[\vec{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]
-n\left[\vec{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle = \\
-& \quad\quad -\frac{1}{2}\left\langle \left\{ n\left[\vec{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right] - 
- n\left[\vec{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right]\right\}^{2} \right\rangle + \\
-&\quad\quad\quad\quad \frac{1}{2}\left\langle \left\{ n\left[\vec{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right)\right]\right\}^{2}\right\rangle + 
-\frac{1}{2}\left\langle \left\{ n\left[\vec{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right)\right]\right\}^{2}\right\rangle \\
+&  \left\langle n\left[\vec{r}^{\;\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]
+n\left[\vec{r}^{\;\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\rangle = \\
+& \quad\quad -\frac{1}{2}\left\langle \left\{ n\left[\vec{r}^{\;\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right] - 
+ n\left[\vec{r}^{\;\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right]\right\}^{2} \right\rangle + \\
+&\quad\quad\quad\quad \frac{1}{2}\left\langle \left\{ n\left[\vec{r}^{\;\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right)\right]\right\}^{2}\right\rangle + 
+\frac{1}{2}\left\langle \left\{ n\left[\vec{r}^{\;\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right)\right]\right\}^{2}\right\rangle \\
 \end{aligned}
 \end{equation}
 and by observing via asymmetry of the integrand that
 \begin{equation}\label{eqn:intzero}
 \begin{aligned}
-\int d\vec{r}^{\prime}_{1} W\left(\vec{r}^{\prime}_{1}/R\right) \left(\vec{r}_{1}\cdot\vec{r}^{\prime}_{1}\right)
-\left\langle \left\{ n\left[\vec{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right)\right]\right\}^{2}\right\rangle
-\int d\vec{r}^{\prime}_{2} W\left(\vec{r}^{\prime}_{2}/R\right) \left(\vec{r}_{2}\cdot\vec{r}^{\prime}_{2}\right) = 0 \\
-\int d\vec{r}^{\prime}_{2} W\left(\vec{r}^{\prime}_{2}/R\right) \left(\vec{r}_{2}\cdot\vec{r}^{\prime}_{2}\right) 
-\left\langle \left\{ n\left[\vec{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{a}\right)\right]\right\}^{2}\right\rangle
-\int d\vec{r}^{\prime}_{1} W\left(\vec{r}^{\prime}_{1}/R\right) \left(\vec{r}_{1}\cdot\vec{r}^{\prime}_{1}\right) = 0
+\int d\vec{r}^{\;\prime}_{1} W\left(\vec{r}^{\;\prime}_{1}/R\right) \left(\vec{r}_{1}\cdot\vec{r}^{\;\prime}_{1}\right)
+\left\langle \left\{ n\left[\vec{r}^{\;\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right)\right]\right\}^{2}\right\rangle
+\int d\vec{r}^{\;\prime}_{2} W\left(\vec{r}^{\;\prime}_{2}/R\right) \left(\vec{r}_{2}\cdot\vec{r}^{\;\prime}_{2}\right) = 0 \\
+\int d\vec{r}^{\;\prime}_{2} W\left(\vec{r}^{\;\prime}_{2}/R\right) \left(\vec{r}_{2}\cdot\vec{r}^{\;\prime}_{2}\right) 
+\left\langle \left\{ n\left[\vec{r}^{\;\prime}_{2}\left(1-z_{2}/\mathcal{R}_{a}\right)\right]\right\}^{2}\right\rangle
+\int d\vec{r}^{\;\prime}_{1} W\left(\vec{r}^{\;\prime}_{1}/R\right) \left(\vec{r}_{1}\cdot\vec{r}^{\;\prime}_{1}\right) = 0
 \end{aligned}
 \end{equation}
 Consequently, Equation \ref{eqn:tphase_n} may be written 
@@ -291,13 +294,13 @@ Consequently, Equation \ref{eqn:tphase_n} may be written
 \begin{aligned}
 &\left\langle \phi^{T}_{a}\left(\vec{r}_{1}\right) \phi^{T}_{b}\left(\vec{r}_{2}\right)\right\rangle = \\
 &\quad\quad\quad
--\frac{8k^{2}}{\pi^{2}R^{8}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\vec{r}^{\prime}_{1}d\vec{r}^{\prime}_{2} W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R)
-\left(\vec{r}_{1} \cdot \vec{r}^{\prime}_{1}\right)
-\left(\vec{r}_{2} \cdot \vec{r}^{\prime}_{2}\right)
+-\frac{8k^{2}}{\pi^{2}R^{8}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\vec{r}^{\;\prime}_{1}d\vec{r}^{\;\prime}_{2} W(\vec{r}^{\;\prime}_{1}/R) W(\vec{r}^{\;\prime}_{2}/R)
+\left(\vec{r}_{1} \cdot \vec{r}^{\;\prime}_{1}\right)
+\left(\vec{r}_{2} \cdot \vec{r}^{\;\prime}_{2}\right)
 \\
 &\quad\quad\quad
-\left\langle \left\{ n\left[\vec{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right] - 
- n\left[\vec{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right]\right\}^{2} \right\rangle \\
+\left\langle \left\{ n\left[\vec{r}^{\;\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right] - 
+ n\left[\vec{r}^{\;\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right]\right\}^{2} \right\rangle \\
 \end{aligned}
 \end{equation}
 Using Equation \ref{eqn:komolgorov}, this becomes
@@ -305,14 +308,14 @@ Using Equation \ref{eqn:komolgorov}, this becomes
 \begin{aligned}
 &\left\langle \phi^{T}_{a}\left(\vec{r}_{1}\right) \phi^{T}_{b}\left(\vec{r}_{2}\right)\right\rangle = \\
 &\quad\quad\quad
--\frac{8k^{2}}{\pi^{2}R^{8}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\vec{r}^{\prime}_{1}d\vec{r}^{\prime}_{2} W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R)
-\left(\vec{r}_{1} \cdot \vec{r}^{\prime}_{1}\right)
-\left(\vec{r}_{2} \cdot \vec{r}^{\prime}_{2}\right)
+-\frac{8k^{2}}{\pi^{2}R^{8}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\vec{r}^{\;\prime}_{1}d\vec{r}^{\;\prime}_{2} W(\vec{r}^{\;\prime}_{1}/R) W(\vec{r}^{\;\prime}_{2}/R)
+\left(\vec{r}_{1} \cdot \vec{r}^{\;\prime}_{1}\right)
+\left(\vec{r}_{2} \cdot \vec{r}^{\;\prime}_{2}\right)
 C_{n}^{2}\left(\frac{z_{1} + z_{2}}{2}\right) 
 \\
 &\quad\quad\quad
-\left[ \left\vert \vec{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a} - 
- \vec{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) - \vec{r}_{b} z_{2}/\mathcal{R}_{b}\right\vert^{2} + 
+\left[ \left\vert \vec{r}^{\;\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a} - 
+ \vec{r}^{\;\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) - \vec{r}_{b} z_{2}/\mathcal{R}_{b}\right\vert^{2} + 
 \left\vert z_{1} - z_{2} \right\vert^{2} \right]^{1/3}
 \end{aligned}
 \end{equation}
@@ -322,19 +325,19 @@ Finally, the covariances between the tilt and piston removed phase in Equation \
 \begin{aligned}
 &\left\langle \phi_{a}\left(\vec{r}_{1}\right) \phi^{T}_{b}\left(\vec{r}_{2}\right)\right\rangle = \\
 &\quad\quad\quad\quad
--\frac{2k^{2}}{\pi^{2}R^{6}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\vec{r}^{\prime}_{1}d\vec{r}^{\prime}_{2} W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R)
-\left(\vec{r}_{2} \cdot \vec{r}^{\prime}_{2}\right)
+-\frac{2k^{2}}{\pi^{2}R^{6}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\vec{r}^{\;\prime}_{1}d\vec{r}^{\;\prime}_{2} W(\vec{r}^{\;\prime}_{1}/R) W(\vec{r}^{\;\prime}_{2}/R)
+\left(\vec{r}_{2} \cdot \vec{r}^{\;\prime}_{2}\right)
 \\
 &\quad\quad\quad\quad\quad\quad
 \left\{
 \left\langle \left\{n\left[\vec{r}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right] -
- n\left[\vec{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\}^{2}\right\rangle 
+ n\left[\vec{r}^{\;\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\}^{2}\right\rangle 
 \right. -
 \\
 &\quad\quad\quad\quad\quad\quad
 \left.
-\left\langle \left\{ n\left[\vec{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]- 
- n\left[\vec{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\}^{2}\right\rangle
+\left\langle \left\{ n\left[\vec{r}^{\;\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a}, z_{1}\right]- 
+ n\left[\vec{r}^{\;\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) + \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right] \right\}^{2}\right\rangle
 \right\}
 \end{aligned}
 \end{equation}
@@ -343,20 +346,20 @@ Again using Equation \ref{eqn:komolgorov}, this may be expressed as
 \begin{aligned}
 &\left\langle \phi_{a}\left(\vec{r}_{1}\right) \phi^{T}_{b}\left(\vec{r}_{2}\right)\right\rangle = \\
 &\quad\quad\quad\quad
--\frac{2k^{2}}{\pi^{2}R^{6}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\vec{r}^{\prime}_{1}d\vec{r}^{\prime}_{2} W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R)
-\left(\vec{r}^{\prime}_{2} \cdot \vec{r}^{\prime}_{2}\right)
+-\frac{2k^{2}}{\pi^{2}R^{6}} \int_{0}^{\mathcal{R}_{a}}  \int_{0}^{\mathcal{R}_{b}} \iint dz_{1} \; dz_{2} \; d\vec{r}^{\;\prime}_{1}d\vec{r}^{\;\prime}_{2} W(\vec{r}^{\;\prime}_{1}/R) W(\vec{r}^{\;\prime}_{2}/R)
+\left(\vec{r}^{\;\prime}_{2} \cdot \vec{r}^{\;\prime}_{2}\right)
 C_{n}^{2}\left(\frac{z_{1} + z_{2}}{2}\right) 
 \\
 &\quad\quad\quad\quad\quad\quad
 \left(
-\left[\left\vert \vec{r}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a} - \vec{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) - \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right\vert^{2}   + 
+\left[\left\vert \vec{r}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a} - \vec{r}^{\;\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) - \vec{r}_{b} z_{2}/\mathcal{R}_{b}, z_{2}\right\vert^{2}   + 
 \left\vert z_{1} - z_{2} \right\vert^{2}\right]^{1/3}
 \right. -
 \\
 &\quad\quad\quad\quad\quad\quad
 \left.
-\left[ \left\vert \vec{r}^{\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a} - 
- \vec{r}^{\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) - \vec{r}_{b} z_{2}/\mathcal{R}_{b}\right\vert^{2} + 
+\left[ \left\vert \vec{r}^{\;\prime}_{1}\left(1-z_{1}/\mathcal{R}_{a}\right) + \vec{r}_{a} z_{1}/\mathcal{R}_{a} - 
+ \vec{r}^{\;\prime}_{2}\left(1-z_{2}/\mathcal{R}_{b}\right) - \vec{r}_{b} z_{2}/\mathcal{R}_{b}\right\vert^{2} + 
 \left\vert z_{1} - z_{2} \right\vert^{2}\right]^{1/3}
 \right)
 \end{aligned}
@@ -398,8 +401,8 @@ the integral.  Ergo, Equations \ref{eqn:prphase_n3},
 -\frac{k^{2}}{2\pi^{2}R^{4}} \int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right)
 \int_{-\infty}^{\infty} dz_{-}\\
 &\quad\quad\quad\quad\quad 
-\iint \; d\vec{r}^{\prime}_{1}d\vec{r}^{\prime}_{2}  
-W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R) \\
+\iint \; d\vec{r}^{\;\prime}_{1}d\vec{r}^{\;\prime}_{2}  
+W(\vec{r}^{\;\prime}_{1}/R) W(\vec{r}^{\;\prime}_{2}/R) \\
 &\quad\quad\quad\quad\quad\quad
 \left(
 \left[ \left\vert \vec{r}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - 
@@ -407,17 +410,17 @@ W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R) \\
 \left\vert z_{-} \right\vert^{2}\right]^{1/3} -
 \right. \\
 & \quad\quad\quad\quad\quad\quad
-\left[ \left\vert \vec{r}^{\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - 
+\left[ \left\vert \vec{r}^{\;\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - 
 \vec{r}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{2} + 
 \left\vert z_{-} \right\vert^{2}\right]^{1/3} - \\
 & \quad\quad\quad\quad\quad\quad
 \left[ \left\vert \vec{r}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - 
-\vec{r}^{\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{2} + 
+\vec{r}^{\;\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{2} + 
 \left\vert z_{-} \right\vert^{2}\right]^{1/3} + \\
 & \quad\quad\quad\quad\quad\quad
 \left.
-\left[ \left\vert \vec{r}^{\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - 
-\vec{r}^{\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{2} + 
+\left[ \left\vert \vec{r}^{\;\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - 
+\vec{r}^{\;\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{2} + 
 \left\vert z_{-} \right\vert^{2}\right]^{1/3}\right)
 \end{aligned}
 \end{equation}
@@ -429,13 +432,13 @@ W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R) \\
 -\frac{8k^{2}}{\pi^{2}R^{8}} \int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right)
 \int_{-\infty}^{\infty} dz_{-} \\
 &\quad\quad\quad\quad\quad 
-\iint \; d\vec{r}^{\prime}_{1}d\vec{r}^{\prime}_{2} W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R)
-\left(\vec{r}_{1} \cdot \vec{r}^{\prime}_{1}\right)
-\left(\vec{r}_{2} \cdot \vec{r}^{\prime}_{2}\right)
+\iint \; d\vec{r}^{\;\prime}_{1}d\vec{r}^{\;\prime}_{2} W(\vec{r}^{\;\prime}_{1}/R) W(\vec{r}^{\;\prime}_{2}/R)
+\left(\vec{r}_{1} \cdot \vec{r}^{\;\prime}_{1}\right)
+\left(\vec{r}_{2} \cdot \vec{r}^{\;\prime}_{2}\right)
 \\
 &\quad\quad\quad\quad\quad\quad
-\left[ \left\vert \vec{r}^{\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - 
- \vec{r}^{\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{2} + 
+\left[ \left\vert \vec{r}^{\;\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - 
+ \vec{r}^{\;\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{2} + 
 \left\vert z_{-} \right\vert^{2} \right]^{1/3}
 \end{aligned}
 \end{equation}
@@ -447,19 +450,19 @@ W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R) \\
 -\frac{2k^{2}}{\pi^{2}R^{6}} \int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right) 
 \int_{-\infty}^{\infty} dz_{-} \\
 &\quad\quad\quad\quad\quad 
-\iint  \; d\vec{r}^{\prime}_{1}d\vec{r}^{\prime}_{2} W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R)
-\left(\vec{r}^{\prime}_{2} \cdot \vec{r}^{\prime}_{2}\right)
+\iint  \; d\vec{r}^{\;\prime}_{1}d\vec{r}^{\;\prime}_{2} W(\vec{r}^{\;\prime}_{1}/R) W(\vec{r}^{\;\prime}_{2}/R)
+\left(\vec{r}^{\;\prime}_{2} \cdot \vec{r}^{\;\prime}_{2}\right)
 \\
 &\quad\quad\quad\quad\quad\quad
 \left(
-\left[\left\vert \vec{r}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - \vec{r}^{\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{2}   + 
+\left[\left\vert \vec{r}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - \vec{r}^{\;\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{2}   + 
 \left\vert z_{-} \right\vert^{2}\right]^{1/3}
 \right. -
 \\
 &\quad\quad\quad\quad\quad\quad
 \left.
-\left[ \left\vert \vec{r}^{\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - 
- \vec{r}^{\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{2} + 
+\left[ \left\vert \vec{r}^{\;\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - 
+ \vec{r}^{\;\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{2} + 
 \left\vert z_{-} \right\vert^{2}\right]^{1/3}
 \right)
 \end{aligned}
@@ -488,23 +491,23 @@ phase covariance, tilt covariance, and cross covariance become
 \frac{2^{1/3}}{5}\frac{\left[\Gamma\left(\frac{1}{6}\right)\right]^{2}}{\Gamma\left(\frac{1}{3}\right)} 
 \int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right) \\
 &\quad\quad\quad\quad\quad
-\iint \; d\vec{r}^{\prime}_{1}d\vec{r}^{\prime}_{2}  
-W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R) \\
+\iint \; d\vec{r}^{\;\prime}_{1}d\vec{r}^{\;\prime}_{2}  
+W(\vec{r}^{\;\prime}_{1}/R) W(\vec{r}^{\;\prime}_{2}/R) \\
 &\quad\quad\quad\quad\quad\quad
 \left(
 \left\vert \vec{r}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - 
 \vec{r}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{5/3} -
 \right. \\
 & \quad\quad\quad\quad\quad\quad
-\left\vert \vec{r}^{\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - 
+\left\vert \vec{r}^{\;\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - 
 \vec{r}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{5/3} - \\
 & \quad\quad\quad\quad\quad\quad
 \left\vert \vec{r}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - 
-\vec{r}^{\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{5/3} + \\
+\vec{r}^{\;\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{5/3} + \\
 & \quad\quad\quad\quad\quad\quad
 \left.
-\left\vert \vec{r}^{\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - 
-\vec{r}^{\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{5/3}\right)
+\left\vert \vec{r}^{\;\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - 
+\vec{r}^{\;\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{5/3}\right)
 \end{aligned}
 \end{equation}
 
@@ -516,13 +519,13 @@ W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R) \\
 \frac{2^{1/3}}{5}\frac{\left[\Gamma\left(\frac{1}{6}\right)\right]^{2}}{\Gamma\left(\frac{1}{3}\right)} 
 \int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right) \\
 &\quad\quad\quad\quad\quad
-\iint \; d\vec{r}^{\prime}_{1}d\vec{r}^{\prime}_{2} W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R)
-\left(\vec{r}_{1} \cdot \vec{r}^{\prime}_{1}\right)
-\left(\vec{r}_{2} \cdot \vec{r}^{\prime}_{2}\right)
+\iint \; d\vec{r}^{\;\prime}_{1}d\vec{r}^{\;\prime}_{2} W(\vec{r}^{\;\prime}_{1}/R) W(\vec{r}^{\;\prime}_{2}/R)
+\left(\vec{r}_{1} \cdot \vec{r}^{\;\prime}_{1}\right)
+\left(\vec{r}_{2} \cdot \vec{r}^{\;\prime}_{2}\right)
 \\
 &\quad\quad\quad\quad\quad\quad
-\left\vert \vec{r}^{\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - 
- \vec{r}^{\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{5/3}
+\left\vert \vec{r}^{\;\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - 
+ \vec{r}^{\;\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{5/3}
 \end{aligned}
 \end{equation}
 
@@ -534,18 +537,18 @@ W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R) \\
 \frac{2^{1/3}}{5}\frac{\left[\Gamma\left(\frac{1}{6}\right)\right]^{2}}{\Gamma\left(\frac{1}{3}\right)} 
 \int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right) \\
 &\quad\quad\quad\quad\quad
-\iint  \; d\vec{r}^{\prime}_{1}d\vec{r}^{\prime}_{2} W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R)
-\left(\vec{r}^{\prime}_{2} \cdot \vec{r}^{\prime}_{2}\right)
+\iint  \; d\vec{r}^{\;\prime}_{1}d\vec{r}^{\;\prime}_{2} W(\vec{r}^{\;\prime}_{1}/R) W(\vec{r}^{\;\prime}_{2}/R)
+\left(\vec{r}^{\;\prime}_{2} \cdot \vec{r}^{\;\prime}_{2}\right)
 \\
 &\quad\quad\quad\quad\quad\quad
 \left(
-\left\vert \vec{r}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - \vec{r}^{\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{5/3}
+\left\vert \vec{r}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - \vec{r}^{\;\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{5/3}
 \right. -
 \\
 &\quad\quad\quad\quad\quad\quad
 \left.
-\left\vert \vec{r}^{\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - 
- \vec{r}^{\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{5/3}
+\left\vert \vec{r}^{\;\prime}_{1}\left(1-z/\mathcal{R}_{a}\right) + \vec{r}_{a} z/\mathcal{R}_{a} - 
+ \vec{r}^{\;\prime}_{2}\left(1-z/\mathcal{R}_{b}\right) - \vec{r}_{b} z/\mathcal{R}_{b}\right\vert^{5/3}
 \right)
 \end{aligned}
 \end{equation}
@@ -570,16 +573,16 @@ to arrive at
 \int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right) 
 \left(1 - z/\mathcal{R}_{\rm a}\right)^{5/3}\\
 &\quad\quad\quad\quad\quad
-\iint \; d\vec{r}^{\prime}_{1}d\vec{r}^{\prime}_{2}  
-W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R) \\
+\iint \; d\vec{r}^{\;\prime}_{1}d\vec{r}^{\;\prime}_{2}  
+W(\vec{r}^{\;\prime}_{1}/R) W(\vec{r}^{\;\prime}_{2}/R) \\
 &\quad\quad\quad\quad\quad\quad
 \left(\left\vert \vec{r}_{1}  - Q_{ab}\left(z\right)\vec{r}_{2} - \vec{\Omega}_{ab}\left(z\right)R\right\vert^{5/3} -
-\left\vert \vec{r}^{\prime}_{1}  - Q_{ab}\left(z\right)\vec{r}_{2} - \vec{\Omega}_{ab}\left(z\right)R\right\vert^{5/3} -
+\left\vert \vec{r}^{\;\prime}_{1}  - Q_{ab}\left(z\right)\vec{r}_{2} - \vec{\Omega}_{ab}\left(z\right)R\right\vert^{5/3} -
 \right. \\
 & \quad\quad\quad\quad\quad\quad
 \left.
-\left\vert \vec{r}_{1}  - Q_{ab}\left(z\right)\vec{r}^{\prime}_{2} - \vec{\Omega}_{ab}\left(z\right)R\right\vert^{5/3} + 
-\left\vert \vec{r}^{\prime}_{1}  - Q_{ab}\left(z\right)\vec{r}^{\prime}_{2} - \vec{\Omega}_{ab}\left(z\right)R\right\vert^{5/3}\right)
+\left\vert \vec{r}_{1}  - Q_{ab}\left(z\right)\vec{r}^{\;\prime}_{2} - \vec{\Omega}_{ab}\left(z\right)R\right\vert^{5/3} + 
+\left\vert \vec{r}^{\;\prime}_{1}  - Q_{ab}\left(z\right)\vec{r}^{\;\prime}_{2} - \vec{\Omega}_{ab}\left(z\right)R\right\vert^{5/3}\right)
 \end{aligned}
 \end{equation}
 
@@ -592,12 +595,12 @@ W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R) \\
 \int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right) 
 \left(1 - z/\mathcal{R}_{\rm a}\right)^{5/3}\\
 &\quad\quad\quad\quad\quad
-\iint \; d\vec{r}^{\prime}_{1}d\vec{r}^{\prime}_{2} W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R)
-\left(\vec{r}_{1} \cdot \vec{r}^{\prime}_{1}\right)
-\left(\vec{r}_{2} \cdot \vec{r}^{\prime}_{2}\right)
+\iint \; d\vec{r}^{\;\prime}_{1}d\vec{r}^{\;\prime}_{2} W(\vec{r}^{\;\prime}_{1}/R) W(\vec{r}^{\;\prime}_{2}/R)
+\left(\vec{r}_{1} \cdot \vec{r}^{\;\prime}_{1}\right)
+\left(\vec{r}_{2} \cdot \vec{r}^{\;\prime}_{2}\right)
 \\
 &\quad\quad\quad\quad\quad\quad
-\left\vert \vec{r}^{\prime}_{1} - Q_{ab}\left(z\right) \vec{r}^{\prime}_{2} + \vec{\Omega}_{ab}\left(z\right) R\right\vert^{5/3}
+\left\vert \vec{r}^{\;\prime}_{1} - Q_{ab}\left(z\right) \vec{r}^{\;\prime}_{2} + \vec{\Omega}_{ab}\left(z\right) R\right\vert^{5/3}
 \end{aligned}
 \end{equation}
 
@@ -610,14 +613,14 @@ W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R) \\
 \int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right) 
 \left(1 - z/\mathcal{R}_{\rm a}\right)^{5/3}\\
 &\quad\quad\quad\quad\quad
-\iint  \; d\vec{r}^{\prime}_{1}d\vec{r}^{\prime}_{2} W(\vec{r}^{\prime}_{1}/R) W(\vec{r}^{\prime}_{2}/R)
-\left(\vec{r}_{2} \cdot \vec{r}^{\prime}_{2}\right)
+\iint  \; d\vec{r}^{\;\prime}_{1}d\vec{r}^{\;\prime}_{2} W(\vec{r}^{\;\prime}_{1}/R) W(\vec{r}^{\;\prime}_{2}/R)
+\left(\vec{r}_{2} \cdot \vec{r}^{\;\prime}_{2}\right)
 \\
 &\quad\quad\quad\quad\quad\quad
 \left(
-\left\vert \vec{r}_{1} - Q_{ab}\left(z\right)\vec{r}^{\prime}_{2} + \vec{\Omega}_{ab}\left(z\right) R\right\vert^{5/3}
-- \left\vert \vec{r}^{\prime}_{1}  - 
- Q_{ab}\left(z\right)\vec{r}^{\prime}_{2} + \vec{\Omega}_{ab}\left(z\right) R \right\vert^{5/3}
+\left\vert \vec{r}_{1} - Q_{ab}\left(z\right)\vec{r}^{\;\prime}_{2} + \vec{\Omega}_{ab}\left(z\right) R\right\vert^{5/3}
+- \left\vert \vec{r}^{\;\prime}_{1}  - 
+ Q_{ab}\left(z\right)\vec{r}^{\;\prime}_{2} + \vec{\Omega}_{ab}\left(z\right) R \right\vert^{5/3}
 \right)
 \end{aligned}
 \end{equation}
@@ -626,7 +629,7 @@ As a final step, make the change of variables
 \begin{equation}
 \begin{aligned}
 \vec{\rho}_{1} = \vec{r}_{1}/R \quad & \quad \vec{\rho}_{2} = \vec{r}_{2}/R \\
-\vec{\rho}^{\prime}_{1} = \vec{r}^{\prime}_{1}/R \quad & \quad \vec{\rho}^{\prime}_{2} = \vec{r}^{\prime}_{2}/R
+\vec{\rho}^{\;\prime}_{1} = \vec{r}^{\;\prime}_{1}/R \quad & \quad \vec{\rho}^{\;\prime}_{2} = \vec{r}^{\;\prime}_{2}/R
 \end{aligned}
 \end{equation}
 and define the quantity 
@@ -641,16 +644,16 @@ to obtain
  -\frac{k^{2}}{\pi^{2}} \Xi D^{5/3}
 \int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right) \left(1 - z/\mathcal{R}_{\rm a}\right)^{5/3}\\
 & \quad\quad\quad\quad\quad
-\iint \; d\vec{\rho}^{\prime}_{1}d\vec{\rho}^{\prime}_{2}  
-W(\vec{\rho}^{\prime}_{1}) W(\vec{\rho}^{\prime}_{2}) \\
+\iint \; d\vec{\rho}^{\;\prime}_{1}d\vec{\rho}^{\;\prime}_{2}  
+W(\vec{\rho}^{\;\prime}_{1}) W(\vec{\rho}^{\;\prime}_{2}) \\
 & \quad\quad\quad\quad\quad\quad
 \left(\left\vert \vec{\rho}_{1}  - Q_{ab}\left(z\right)\vec{\rho}_{2} - \vec{\Omega}_{ab}\left(z\right)\right\vert^{5/3} -
-\left\vert \vec{\rho}^{\prime}_{1}  - Q_{ab}\left(z\right)\vec{\rho}_{2} - \vec{\Omega}_{ab}\left(z\right)\right\vert^{5/3} -
+\left\vert \vec{\rho}^{\;\prime}_{1}  - Q_{ab}\left(z\right)\vec{\rho}_{2} - \vec{\Omega}_{ab}\left(z\right)\right\vert^{5/3} -
 \right. \\
 & \quad\quad\quad\quad\quad\quad
 \left.
-\left\vert \vec{\rho}_{1}  - Q_{ab}\left(z\right)\vec{\rho}^{\prime}_{2} - \vec{\Omega}_{ab}\left(z\right)\right\vert^{5/3} + 
-\left\vert \vec{\rho}^{\prime}_{1}  - Q_{ab}\left(z\right)\vec{\rho}^{\prime}_{2} - \vec{\Omega}_{ab}\left(z\right)\right\vert^{5/3}\right)
+\left\vert \vec{\rho}_{1}  - Q_{ab}\left(z\right)\vec{\rho}^{\;\prime}_{2} - \vec{\Omega}_{ab}\left(z\right)\right\vert^{5/3} + 
+\left\vert \vec{\rho}^{\;\prime}_{1}  - Q_{ab}\left(z\right)\vec{\rho}^{\;\prime}_{2} - \vec{\Omega}_{ab}\left(z\right)\right\vert^{5/3}\right)
 \end{aligned}
 \end{equation}
 
@@ -662,12 +665,12 @@ W(\vec{\rho}^{\prime}_{1}) W(\vec{\rho}^{\prime}_{2}) \\
 \Xi D^{5/3}
 \int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right) \left(1 - z/\mathcal{R}_{\rm a}\right)^{5/3}\\
 & \quad\quad\quad\quad\quad
-\iint \; d\vec{\rho}^{\prime}_{1}d\vec{\rho}^{\prime}_{2} W(\vec{\rho}^{\prime}_{1}) W(\vec{\rho}^{\prime}_{2})
-\left(\vec{\rho}_{1} \cdot \vec{\rho}^{\prime}_{1}\right)
-\left(\vec{\rho}_{2} \cdot \vec{\rho}^{\prime}_{2}\right)
+\iint \; d\vec{\rho}^{\;\prime}_{1}d\vec{\rho}^{\;\prime}_{2} W(\vec{\rho}^{\;\prime}_{1}) W(\vec{\rho}^{\;\prime}_{2})
+\left(\vec{\rho}_{1} \cdot \vec{\rho}^{\;\prime}_{1}\right)
+\left(\vec{\rho}_{2} \cdot \vec{\rho}^{\;\prime}_{2}\right)
 \\
 &\quad\quad\quad\quad\quad\quad
-\left\vert \vec{\rho}^{\prime}_{1} - Q_{ab}\left(z\right) \vec{\rho}^{\prime}_{2} + \vec{\Omega}_{ab}\left(z\right)\right\vert^{5/3}
+\left\vert \vec{\rho}^{\;\prime}_{1} - Q_{ab}\left(z\right) \vec{\rho}^{\;\prime}_{2} + \vec{\Omega}_{ab}\left(z\right)\right\vert^{5/3}
 \end{aligned}
 \end{equation}
 
@@ -679,14 +682,14 @@ W(\vec{\rho}^{\prime}_{1}) W(\vec{\rho}^{\prime}_{2}) \\
 \Xi D^{5/3}
 \int_{0}^{\mathcal{R}_{\rm min}} dz\;C_{n}^{2}\left(z\right) \left(1 - z/\mathcal{R}_{\rm a}\right)^{5/3}\\
 & \quad\quad\quad\quad\quad
-\iint  \; d\vec{\rho}^{\prime}_{1}d\vec{\rho}^{\prime}_{2} W(\vec{\rho}^{\prime}_{1}) W(\vec{\rho}^{\prime}_{2})
-\left(\vec{\rho}_{2} \cdot \vec{\rho}^{\prime}_{2}\right)
+\iint  \; d\vec{\rho}^{\;\prime}_{1}d\vec{\rho}^{\;\prime}_{2} W(\vec{\rho}^{\;\prime}_{1}) W(\vec{\rho}^{\;\prime}_{2})
+\left(\vec{\rho}_{2} \cdot \vec{\rho}^{\;\prime}_{2}\right)
 C_{n}^{2}\left(z\right) 
 \\
 &\quad\quad\quad\quad\quad\quad
 \left(
-\left\vert \vec{\rho}_{1} - Q_{ab}\left(z\right)\vec{\rho}^{\prime}_{2} + \vec{\Omega}_{ab}\left(z\right) \right\vert^{5/3}
-- \left\vert \vec{\rho}^{\prime}_{1}  -  Q_{ab}\left(z\right)\vec{\rho}^{\prime}_{2} + \vec{\Omega}_{ab}\left(z\right)  \right\vert^{5/3}
+\left\vert \vec{\rho}_{1} - Q_{ab}\left(z\right)\vec{\rho}^{\;\prime}_{2} + \vec{\Omega}_{ab}\left(z\right) \right\vert^{5/3}
+- \left\vert \vec{\rho}^{\;\prime}_{1}  -  Q_{ab}\left(z\right)\vec{\rho}^{\;\prime}_{2} + \vec{\Omega}_{ab}\left(z\right)  \right\vert^{5/3}
 \right)
 \end{aligned}
 \end{equation}

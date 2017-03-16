@@ -3,6 +3,8 @@ sec_introduction.tex
 sec_psf_formulation_A.tex
 figures/guide_star_schematic/guide_star_schematic.png
 sec_psf_formulation_B.tex
+figures/ngs_perfect/ngs_perfect.png
+sec_psf_formulation_C.tex
 app_kolmogorov_deriv_A.tex
 figures/r_vector_schematic/r_vector_schematic.png
 app_kolmogorov_deriv_B.tex
