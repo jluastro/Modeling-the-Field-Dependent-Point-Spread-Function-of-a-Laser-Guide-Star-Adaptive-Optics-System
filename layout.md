@@ -5,6 +5,8 @@ figures/guide_star_schematic/guide_star_schematic.png
 sec_psf_formulation_B.tex
 figures/ngs_perfect/ngs_perfect.png
 sec_psf_formulation_C.tex
+figures/lgs_atm_inst/lgs_atm_inst.png
+sec_psf_formulation_D.tex
 app_kolmogorov_deriv_A.tex
 figures/r_vector_schematic/r_vector_schematic.png
 app_kolmogorov_deriv_B.tex

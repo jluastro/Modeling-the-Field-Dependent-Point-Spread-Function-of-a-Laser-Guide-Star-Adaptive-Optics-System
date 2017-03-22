@@ -6,37 +6,112 @@ provide some of the sharpest infrared astronomical images.
 High-resolution AO images and spectroscopy from WMKO have produced 
 notable scientific results, including precise measurements of the mass
 and distance of the supermassive black hole at the Galactic Center
-\cite{Ghez:2008,Meyer:2016}, OTHERS. 
-% AO images of stars orbiting close to this supermassive black
-% hole have the potential to uniquely test general relativity in the strong
-% gravity regime. However, 
+\cite{Ghez:2008,Meyer:2012}, 
+directly imaging exoplanets \cite{Marois:2008,Marois:2010},
+constraining the progenitors of exotic supernovae
+\cite{Smith:2007,GalYam:2007},
+and mapping weather and volcanos on moons in the solar system
+\cite{Roe:2002,Marchis:2005}
 Despite their success, current AO systems have not yet reached their
 full potential due to our incomplete knowledge of the temporal and
 spatial variations in the point spread function (PSF,
 \cite{Davies:2012,Lu:2014}). 
-Current astrometric and photometric limits are 
+Current astrometric and photometric precisions have not reached 
+the signal-to-noise limit and instead reach a systematic error floor
+due to errors in PSF estimation.
+
+Modeling the adaptive optics PSF and its spatial variation has
+been developed in theory 
+\cite{Veran:1996,Flicker:2003,Steinbring:2003,Steinbring:2005,Gendron:2006} 
+and has been attempted both in simulations and on-sky with some success 
+\cite{Harder:1998,Harder:1999,Jolissaint:2004,Aubailly:2005,Britton:2006,Clenet:2008,Martin:2016}.
+Nearly all of the on-sky studies were conducted using natural guide
+stars and resulted in $>$20\% errors. To date, no PSF reconstruction tool is
+used regularly on astronomical adaptive optics observations.
 \begin{notes}
-Add more here.
+CHECK THIS
 \end{notes}
+The primary limitation has been the lack of a robust end-user tool
+that can easily ingest the wide range of calibration, atmospheric
+turbulence, AO telemetry, and scientific data and produce a precise grid
+of model PSFs that are then used to extract photometry, astrometry,
+and morphology information on the science target. And all of this
+needs to be performed in a computationally efficient manner.
+
+
+
+% \cite{Steinbring:2005,Davies:2012,Trippe:2010}. 
+
+% \cite{Mao:2016}
+% Refinements in PSF prediction.
+
+% \cite{Flicker:2003}
+% New model for reconstructing tilt anisoplanatism.
+
+% \cite{Veran:1996}
+% First proposal of using telemetry to reconstruct the on-axis PSF.
+
+% \cite{Harder:1998,Harder:1999}
+% First application to SH WFS on ADONIS (on faint targets).
+
+% \cite{Jolissaint:2004}
+% Applied Veran method to Altair. (NGS)
+
+% \cite{Aubailly:2005}
+% anisoplanatic PSF reconstruction... compared to simulations only.
+
+% \cite{Gendron:2006}
+% New computational algorithms for PSF reconstruction.
+
+% \cite{Clenet:2008}
+% Testing on NACO
+
+% \cite{Martin:2016}
+% Testing on canary
+
+The need for improved PSF modeling in adaptive optics images is
+wide-spread; however, it is particularly acute in the case of Galactic
+Center studies. Adaptive optics measurements of stars orbiting the
+supermassive black hole can be used to test General
+Relativity and other theories of gravity in a strong-field, high-mass
+regime \cite{Hees:2017}. To achieve this scientific goal, improvements in the
+astrometric and photometric precision are required. Furthermore, the
+astrometry must be improved over the entire field of view since all
+many stars are needed to establish an accurate absolute cooridinate
+system that doesn't move and distort with time or changes in the
+atmospheric conditions.
 
 Motivated by the need for improved astrometry and photometry in
-Keck adaptive optics observations of crowded-fields, we have developed new
+Keck adaptive optics observations of the Galactic Center, we have developed new
 algorithms to reconstruct the spatial variation of the point-spread
 function (PSF). 
 These algorithms are deployed in a software package called
  AIROPA ({\it A}nisoplanatic and {\it I}nstrumental {\it
   R}econstruction of {\it O}ff-axis {\it P}SFs for {\it A}O) to
-account for the spatial and temporal variations of the PSF. 
-\begin{notes}
-CROSS REF to Gunther's papers
-\end{notes}
-In this paper, we describe the 
+account for both the spatial and temporal variations of the PSF
+\cite{Fitzgerald:2012,Sitarski:2014,Witzel:2016}. 
+AIROPA accounts for PSF variations due to both atmospheric
+anisoplanatism \cite{Fitzgerald:2012} and instrumental abberrations
+\cite{Sitarski:2014}. The modeling framework for the
+atmospheric anisoplanatism is based on a successful experiment
+conducted at Palomar that uses external measurements of the $C_n^2$
+profile of the atmospheric turbulence from a MASS/DIMM unit
+\cite{Britton:2006}.  This experiment and the underlying model
+algorithms were develop for natural guide star. In this paper, 
+we present the mathematical formalism and implementation details for
+modeling laser guide star observations with AIROPA. 
 
-The current Keck II AO system is equipped with a laser guide star,
-single-conjugate adaptive optics system 
+\section{AIROPA for NIRC2 on Keck II}
 
-More PSF reconstruction references \cite{Steinbring:2005,Davies:2012,Trippe:2010}
+The AIROPA project is initially focused on modeling PSF variation in
+observations obtained with the Keck II AO system \cite{Wizinowich:2006,vanDam:2006} 
+and the NIRC2 camera (PI: K. Matthews). To model the PSF variation, a
+number of telescope and adaptive optics system parameters are
+required, which are listed in Table \ref{tab:keck_ao_nirc2}.
 
-Matthew's paper. \cite{Britton:2006}
+% \begin{deluxetable}
+
+% \end{deluxetable}
+
 
 
