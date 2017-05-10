@@ -108,10 +108,37 @@ observations obtained with the Keck II AO system \cite{Wizinowich:2006,vanDam:20
 and the NIRC2 camera (PI: K. Matthews). To model the PSF variation, a
 number of telescope and adaptive optics system parameters are
 required, which are listed in Table \ref{tab:keck_ao_nirc2}.
+These parameters are stored in an instrumental configuration file,
+which can be passed into AIROPA. As part of this configuration,
+a map of the spatially dependent instrumental aberrations are needed
+as described in \cite{Sitarski:2014}. Incorporation of the instrumental 
+aberrations is described in more detail below.
 
-% \begin{deluxetable}
-
-% \end{deluxetable}
+\begin{deluxetable}{llp{3in}}
+\tabletypesize{\footnotesize}
+\tablewidth{0pt}
+\tablecaption{Keck AO and NIRC2 Parameters}
+\tablehead{
+Parameter & Value & Description 
+}
+\startdata
+Instrument: & NIRC 2 & The name of the instrument. Currently only NIRC2 is supported. \\
+Pixel scale as: & 0.01 & The instrument pixel scale in units of mas/pixel. \\
+Tel pupil size: & 11.14 & The diameter of the primary mirror in m. \\
+Ph map pupil size pix: & 65 & The number of pixels across the instrumental phase maps. \\
+Pupil: & NIRC 2 large hex pupil generator & The NIRC2 pupil mask used. Options include (). \\
+Phase map model: & phase\textunderscore cube\textunderscore old\textunderscore 251.fits & The name of the FITS file 
+that contains the grid of OTF ratios for the instrumental model. \\
+X positions: & xvals.fits & The X positions for each OTF ratio array in the FITS files for the instrumental model. \\ 
+Y positions: & yvals.fits & The Y positions for each OTF ratio array in the FITS files for the instrumental model. \\
+AO mode: & LGS & Either LGS or NGS. \\
+\enddata
+% \tablenotetext{}{test}
+% A description of the instrumental model grid of OTF ratio arrays is
+% given in \cite{Sitarski:2014}.
+% }
+\label{tab:keck_ao_nirc2}
+\end{deluxetable}
 
 
 

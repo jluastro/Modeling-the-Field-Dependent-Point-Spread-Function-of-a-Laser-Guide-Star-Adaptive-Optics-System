@@ -7,11 +7,7 @@ $D_{\rm \phi_{ao}}(\vec{s}, \vec{r} + \vec{s})$
 and using the measured values directly in Equation
 \ref{eqn:lgsotf}.  The static, field-dependent instrumental wavefront
 error, $\phi_{\rm inst,sci}(\vec{r})$, may be measured using a technique 
-such as phase diversity
-\begin{notes}
-[CITE our work]
-\end{notes}
-.  The
+such as phase diversity \cite{Fitzgerald:2014,Sitarski:2014}.  The
 structure function may then be formed by brute force numerical
 calculation via
 \begin{equation}
@@ -26,34 +22,30 @@ of the adaptive optics system.  Such a characterization would involve
 understanding the contribution to the structure function $D_{\rm
   \phi_{ao}}(\vec{r}_{1},\vec{r}_{2})$ from measurement errors,
 servo and fitting errors for specific hardware and under specific
-observing conditions.  For example, the statistical properties of 
-high-order fitting error are determined by the turbulence profile and
-actuator pitch on the deformable mirror
-\begin{notes}
-[CITE].
-\end{notes}
-Similarly, statistical
-properties of high-order measurement error are dictated by the
-geometry of the wavefront sensor, noise and diffusion properties of
-the wavefront sensor detector, and by the guide star brightness.  Finally,
-the statistical properties of high-order servo errors are dictated by the
-turbulence and wind profiles and by the latency in the real time
-controller.  If the four dimensional structure function $D_{\rm
-  \phi_{ao}}(\vec{r}_{1},\vec{r}_{2})$ may be modelled
-successfully, then the OTF may be computed
-directly from Equation \ref{eqn:lgsotf}.  Modelling of $D_{\rm
-  \phi_{ao}}(\vec{r}_{1},\vec{r}_{2})$ at Keck is beyond 
-the scope of this project and is being pursued in a parallel effort funded 
-through the NSF ATI program 
-\begin{notes}
-[PI: Wizinowich, NSF-ATI number].
-\end{notes}
+observing conditions.  For % example, the statistical properties of 
+% high-order fitting error are determined by the turbulence profile and
+% actuator pitch on the deformable mirror
+% \begin{notes}
+% [CITE].
+% \end{notes}
+% Similarly, statistical
+% properties of high-order measurement error are dictated by the
+% geometry of the wavefront sensor, noise and diffusion properties of
+% the wavefront sensor detector, and by the guide star brightness.  Finally,
+% the statistical properties of high-order servo errors are dictated by the
+% turbulence and wind profiles and by the latency in the real time
+% controller.  If the four dimensional structure function $D_{\rm
+%   \phi_{ao}}(\vec{r}_{1},\vec{r}_{2})$ may be modelled
+% successfully, then the OTF may be computed
+% directly from Equation \ref{eqn:lgsotf}.  
+Modelling of $D_{\rm \phi_{ao}}(\vec{r}_{1},\vec{r}_{2})$ at Keck is beyond 
+the scope of this project and is being pursued in a parallel effort
+for Keck \cite{Jolissaint:2014,Ragland:2016}
 The results of this modelling may demonstrate that 
 $D_{\rm \phi_{ao}}(\vec{r}_{1},\vec{r}_{2})$ is nearly
-stationary.  This might be argued based on the fact that fitting,
-servo and measurement errors tend to decorrelate at separations of a
-single subaperture, and do so uniformly over the pupil plane.  This
-leads to structure functions that are stationary.  Were this
+stationary, which might be expected given that fitting,
+servo, and measurement errors tend to decorrelate at separations of a
+single subaperture, and do so uniformly over the pupil plane.  Were this
 assumption to hold, one could write Equation \ref{eqn:lgsotf} as
 \begin{equation}\label{eqn:lgsotfb}
 \begin{aligned}
@@ -74,8 +66,8 @@ Naturally this stationarity assumption must be validated against
 performance of real hardware, and its validity is dictated by the
 modelling accuracy required for the astronomical application.  
 
-Finally, one could postulate a model that assumes the instrumental
-structure function is stationary, so that
+Finally, the approach adopted by AIROPA is a model that assumes the instrumental
+structure function is also stationary, so that
 \begin{equation}\label{eqn:lgsotfc}
 \begin{aligned}
 {\rm OTF}^{\rm LGS}_{\rm sci}(\vec{r}) = 
@@ -93,10 +85,9 @@ D_{\rm \phi_{apl}}(\vec{s},\vec{r} + \vec{s})
 \end{aligned}
 \end{equation}
 Example PSF and OTFs are shown in Figure \ref{fig:lgs_atm_inst} for
-the case of an on-axis LGS and TTS both with atmospheric
-anisoplanatism and both with and without stationary instrumental 
+the case of an on-axis LGS and TTS with both atmospheric
+anisoplanatism and stationary instrumental 
 aberrations. This approximation would be suitable when 
 $\phi_{\rm inst,sci} \left( \vec{r} \right) \ll 
-\phi_{\rm apl} \left( \vec{r} \right)$. Ultimately, 
-this approximation is adopted for AIROPA.
+\phi_{\rm apl} \left( \vec{r} \right)$. 
 

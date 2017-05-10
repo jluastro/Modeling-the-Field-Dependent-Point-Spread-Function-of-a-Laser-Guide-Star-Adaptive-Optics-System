@@ -101,7 +101,7 @@ $D$, turbulence profile $C_{n}^{2}(z)$, source ranges
 $\mathcal{R}_{a}$ and $\mathcal{R}_{b}$, and their locations
 $\vec{r}_{a}$ and $\vec{r}_{b}$ in the field.  All of
 these parameters are known in a specific observing geometry such as
-that shown in Figure \ref{geo} with the exception of the turbulence
+that shown in Figure \ref{fig:r_vector_schematic} with the exception of the turbulence
 profile $C_{n}^{2}(z)$.  
 On Maunakea, a $C_{n}^{2}(z)$ profile is measured in real-time
 using a MASS/DIMM facility and is made available through the Mauna Kea Weather
@@ -134,15 +134,21 @@ astronomical data reduction.
 \section{Computational Formulation}
 \label{sec:compcovariance}
 
-
-Arroyo \cite{}
-
-Tyler addresses the issue of computability by providing simplifying
-expressions for each of the integrals that appear in Equations
-\ref{eqn:prphase}, \ref{eqn:tphase} and \ref{eqn:tprphase} .  This report
-adheres to Tyler's Geugenbauer polynomial formalism, which is
-presented in Appendix A3\cite{1994JOSAA..11..409T}.  The piston
+The issue of computability of the structure function and OTF has previously been 
+explored \cite{Tyler:1994} and simplified 
+expressions have been developed for each of the integrals that appear in Equations
+\ref{eqn:prphase}, \ref{eqn:tphase} and \ref{eqn:tprphase}.  
+AIROPA utilizes the Arroyo atmospheric modeling package developed by M. Britton
+\begin{notes}
+CITE?,
+\end{notes}
+which adheres to the Geugenbauer polynomial formalism developed in 
+Appendix A3 of \cite{Tyler:1994}. The piston
 removed phase covariance is given by
+\begin{notes}
+What happened to the integrals over the pupil ($\rho_1$ and $\rho_2$)? See the 
+last equations in the appendix.
+\end{notes}
 \begin{equation}\label{phasecovariance}
 \left\langle \phi_{a}\left(R\vec{\rho}_{1}\right)  \phi_{b}\left(R\vec{\rho}_{2}\right)\right\rangle = 
 \Xi D^{5/3} k^{2} \left\{
@@ -182,7 +188,7 @@ F_{1}\left(\frac{\left\vert\vec{\rho}_{1} + \vec{\Omega}_{ab}\left(z\right)\righ
 \begin{equation}\label{caliph_B}
 \mathcal{B}_{ab}\left(\vec{\rho}_{2}\right) = 
 \int_{0}^{\mathcal{R}_{\rm min}} dz \; C_{n}^{2}\left(z\right) \left( 1 - \frac{z}{\mathcal{R}_{a}}\right)^{5/3}\; 
-F_{1}\left(\left\vert Q_{ab}\left(z\right)\vec{\rho}_{2} - \vec{\Omega}_{ab}\left(z\right)\right\vert\right)
+F_{1}\left(\left\vert Q_{ab}\left(z\right)\vec{\rho}_{2} + \vec{\Omega}_{ab}\left(z\right)\right\vert\right)
 \end{equation}
 \begin{equation}\label{caliph_C}
 \mathcal{C}_{ab}\left(\vec{\rho}_{1}, \vec{\rho}_{2}\right) = 
@@ -266,6 +272,10 @@ x^{5/3}\; \vphantom{F}_{2}F_{1}\left(-\frac{5}{6}, -\frac{5}{6};2; x^{-2}\right)
 \end{aligned}
 \right.
 \end{equation}
+\begin{equation}\label{2_F_2_eqn}
+_2F_1(a,b;c;z) = \frac{\Gamma(c)}{\Gamma(a)\Gamma(b)} \sum_{n=0}^{\infty} 
+\frac{\Gamma(a + n) \Gamma(b + n)}{\Gamma(c + n)} \frac{z^n}{n!}
+\end{equation}
 \begin{equation}\label{F_2_eqn}
 F_{2}\left(\alpha, x\right) = \frac{2}{\pi \alpha^{2}} \int_{0}^{1+\alpha} d\rho K_{1}\left(\rho, \alpha\right)H\left(\rho, x\right)
 \end{equation}
@@ -278,7 +288,7 @@ K_{1}\left(\rho,\alpha\right) =
 &
 \begin{split}
 \cos^{-1}&\left(t_{0}\right) - t_{0}\sqrt{1-t_{0}} + \\
-&\alpha^{2}\left[\cos^{-1}\left(s_{0}/\alpha\right) - s_{0}/\alpha\sqrt{1-s_{0}/\alpha^{2}}\right] 
+&\alpha^{2}\left[\cos^{-1}\left(s_{0}/\alpha\right) - \left(s_{0}/\alpha\right)\sqrt{1-\left(s_{0}/\alpha\right)^{2}}\right] 
 \end{split}
 & \quad 1 - \alpha \le \left\vert\rho\right\vert  \le 1+\alpha \\
 \\
@@ -295,8 +305,8 @@ s_{0} = \frac{\rho}{2} - \frac{1 - \alpha^{2}}{2\rho} \quad & \quad t_{0} = \fra
 H\left(\rho,x\right) = 
 \left\{
 \begin{aligned}
-\rho^{8/3} \vphantom{F}_{2}F_{1}\left(-\frac{5}{6}, -\frac{5}{6};1; \left(x/\rho\right)^{-2}\right)        & \quad x\le \rho \\
-\rho x^{5/3} \vphantom{F}_{2}F_{1}\left(-\frac{5}{6}, -\frac{5}{6};1; \left(\rho/x\right)^{-2}\right)        & \quad x > \rho
+\rho^{8/3} \vphantom{F}_{2}F_{1}\left(-\frac{5}{6}, -\frac{5}{6};1; \left(x/\rho\right)^{2}\right)        & \quad x\le \rho \\
+\rho x^{5/3} \vphantom{F}_{2}F_{1}\left(-\frac{5}{6}, -\frac{5}{6};1; \left(\rho/x\right)^{2}\right)        & \quad x > \rho
 \end{aligned}
 \right.
 \end{equation}

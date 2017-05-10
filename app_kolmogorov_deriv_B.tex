@@ -8,6 +8,7 @@ n
 \left( \vec{r}^{\;\prime} \left[ 1 - \frac{z}{\mathcal{R}_{a}} \right] + 
 \vec{r}_{a} \left[ \frac{z}{\mathcal{R}_{a}} \right], \; z \right)
 \end{equation}
+% Same as Tyler:1994 Eq. 9
 The piston removed component of the wavefront phase is then
 \begin{equation}\label{eqn:prphase_n}
 \phi_{a}\left(\vec{r}\right) = \hat{\phi}_{a}\left(\vec{r}\right) - \bar{\phi}_{a}
@@ -25,6 +26,7 @@ n
 \vec{r}_{a} \left[ \frac{z}{\mathcal{R}_{a}} \right], \;z \right)
 \end{aligned}
 \end{equation}
+% Same as Tyler:1994 Eq. 10
 Definition of this quantity is often confusing.  There is a
 distinction between angular tilt, tilt optical path difference, and
 tilt phase.  The first quantity is the angle formed by the physical,
@@ -44,8 +46,7 @@ refraction function $n(\vec{r}, \;z) = \alpha r \cos
 \theta \;\delta\left(z\right)$, where $\delta\left(z\right)$ is the
 Kronecker delta function.
 \begin{notes}
-[Do we need this example here? What is $\theta$ in the $n$ equation?
-What coordinates are we in? What happened to our 1 - z/R expressions? ]
+[This example is not in Tyler and is pedagogical; but useful.]
 \end{notes}
 Equation \ref{eqn:tilt_n} should measure the
 angular tilt coefficient $\alpha$, so that $\vec{\theta} =
@@ -106,7 +107,7 @@ $\vec{r}$ multiplied by the wavenumber.
 
 Equations \ref{eqn:totalphase_n} - \ref{eqn:tilt_n} and Equation
 \ref{eqn:tiltphase_n} are the expressions required to form the covariance
-functions in Equation \ref{eqn:tpcf}.  The two-point piston removed phase
+functions in Equation \ref{eqn:tprphase}.  The two-point piston removed phase
 covariance function is
 \begin{equation}\label{eqn:prphase_n}
 \begin{aligned}
@@ -133,6 +134,8 @@ covariance function is
 \right\}
 \end{aligned}
 \end{equation}
+% This is the same as Tyler:1994 Eq 16, only without the tilt removed
+% (only piston removed). 
 The tilt covariance function is
 \begin{equation}\label{eqn:tphase_n}
 \begin{aligned}
@@ -196,7 +199,7 @@ K_{1/3}\left(\kappa_{0}\left[\left\vert \vec{r}_{1} - \vec{r}_{2} \right\vert^{2
 \end{equation}
 where $\kappa_{0} = 2\pi / L_{0}$, $L_{0}$ is the outer scale, and
 $K_{1/3}\left(x\right)$ is a modified Bessel
-function\cite{sasiela2007electromagnetic}.  A finite outer scale is
+function\cite{Sasiela:2012}.  A finite outer scale is
 not considered further in this report.
 
 The next step in this calculation is to use Equation \ref{eqn:komolgorov}
@@ -481,7 +484,7 @@ subtracted pairwise to Equations \ref{eqn:prphase_n4} and
 Equation \ref{eqn:intglident}.  Appealing to Equation \ref{eqn:intzero}, this
 same quantity may be added to Equation \ref{eqn:tphase_n4} without
 changing the value of the integrand.  This permits integration over
-$z_{-}$ via the relationship The expressions for the piston removed
+$z_{-}$. The expressions for the piston removed
 phase covariance, tilt covariance, and cross covariance become
 \begin{equation}\label{eqn:prphase_n5}
 \begin{aligned}
@@ -554,7 +557,7 @@ W(\vec{r}^{\;\prime}_{1}/R) W(\vec{r}^{\;\prime}_{2}/R) \\
 \end{equation}
 
 
-Define the following two variables
+To further simplify, define the following two variables
 \begin{equation}\label{eqn:Omega}
 \vec{\Omega}_{ab}\left(z\right) = 
 \left(\frac{\vec{r}_{a}}{\mathcal{R}_{a}} - \frac{\vec{r}_{b}}{\mathcal{R}_{b}} \right) \frac{z/R}{1-z/\mathcal{R}_{\rm a}}
@@ -563,10 +566,19 @@ Define the following two variables
 Q_{ab}\left(z\right) =  
 \frac{1 - z/\mathcal{R}_{\rm b}}{1-z/\mathcal{R}_{\rm a}}
 \end{equation}
+Note that in Arroyo code, a useful intermediate quantity is
+calculated:
+\begin{equation}\label{eqn:little_omega}
+\vec{\omega}_{ab} = \left(\frac{\vec{r}_{a}}{\mathcal{R}_{a}} - \frac{\vec{r}_{b}}{\mathcal{R}_{b}} \right) \frac{1}{R}
+\end{equation}
+such that 
+\begin{equation}
+\vec{\Omega}_{ab} = \vec{\omega}_{ab} \frac{z}{1-z/\mathcal{R}_{\rm a}}
+\end{equation}
 to arrive at
 \begin{equation}\label{eqn:prphase_n6}
 \begin{aligned}
-&\left\langle \vphantom{\hat{\phi}_{a}} \phi_{a}\left(\vec{r}_{1}\right) \phi_{b}\left(\vec{r}_{2}\right)\right\rangle = \\
+&\left\langle \vphantom{\hat{\phi}_{a}} \phi_{a}\left(\vec{r}_{1}\right) \phi_{b}\left(\vec{r}_{2}\right)\right\rangle = \quad \quad \quad\\
 &\quad\quad\quad
 -\frac{k^{2}}{2\pi^{2}R^{4}} 
 \frac{2^{1/3}}{5}\frac{\left[\Gamma\left(\frac{1}{6}\right)\right]^{2}}{\Gamma\left(\frac{1}{3}\right)} 
@@ -576,19 +588,19 @@ to arrive at
 \iint \; d\vec{r}^{\;\prime}_{1}d\vec{r}^{\;\prime}_{2}  
 W(\vec{r}^{\;\prime}_{1}/R) W(\vec{r}^{\;\prime}_{2}/R) \\
 &\quad\quad\quad\quad\quad\quad
-\left(\left\vert \vec{r}_{1}  - Q_{ab}\left(z\right)\vec{r}_{2} - \vec{\Omega}_{ab}\left(z\right)R\right\vert^{5/3} -
-\left\vert \vec{r}^{\;\prime}_{1}  - Q_{ab}\left(z\right)\vec{r}_{2} - \vec{\Omega}_{ab}\left(z\right)R\right\vert^{5/3} -
+\left(\left\vert \vec{r}_{1}  - Q_{ab}\left(z\right)\vec{r}_{2} + \vec{\Omega}_{ab}\left(z\right)R\right\vert^{5/3} -
+\left\vert \vec{r}^{\;\prime}_{1}  - Q_{ab}\left(z\right)\vec{r}_{2} + \vec{\Omega}_{ab}\left(z\right)R\right\vert^{5/3} -
 \right. \\
 & \quad\quad\quad\quad\quad\quad
 \left.
-\left\vert \vec{r}_{1}  - Q_{ab}\left(z\right)\vec{r}^{\;\prime}_{2} - \vec{\Omega}_{ab}\left(z\right)R\right\vert^{5/3} + 
-\left\vert \vec{r}^{\;\prime}_{1}  - Q_{ab}\left(z\right)\vec{r}^{\;\prime}_{2} - \vec{\Omega}_{ab}\left(z\right)R\right\vert^{5/3}\right)
+\left\vert \vec{r}_{1}  - Q_{ab}\left(z\right)\vec{r}^{\;\prime}_{2} + \vec{\Omega}_{ab}\left(z\right)R\right\vert^{5/3} + 
+\left\vert \vec{r}^{\;\prime}_{1}  - Q_{ab}\left(z\right)\vec{r}^{\;\prime}_{2} + \vec{\Omega}_{ab}\left(z\right)R\right\vert^{5/3}\right)
 \end{aligned}
 \end{equation}
 
 \begin{equation}\label{eqn:tphase_n6}
 \begin{aligned}
-&\left\langle \phi^{T}_{a}\left(\vec{r}_{1}\right) \phi^{T}_{b}\left(\vec{r}_{2}\right)\right\rangle = \\
+&\left\langle \phi^{T}_{a}\left(\vec{r}_{1}\right) \phi^{T}_{b}\left(\vec{r}_{2}\right)\right\rangle = \quad \quad \quad \quad \quad \quad \quad \quad \quad \quad\\
 &\quad\quad\quad
 -\frac{8k^{2}}{\pi^{2}R^{8}} 
 \frac{2^{1/3}}{5}\frac{\left[\Gamma\left(\frac{1}{6}\right)\right]^{2}}{\Gamma\left(\frac{1}{3}\right)} 
@@ -647,13 +659,13 @@ to obtain
 \iint \; d\vec{\rho}^{\;\prime}_{1}d\vec{\rho}^{\;\prime}_{2}  
 W(\vec{\rho}^{\;\prime}_{1}) W(\vec{\rho}^{\;\prime}_{2}) \\
 & \quad\quad\quad\quad\quad\quad
-\left(\left\vert \vec{\rho}_{1}  - Q_{ab}\left(z\right)\vec{\rho}_{2} - \vec{\Omega}_{ab}\left(z\right)\right\vert^{5/3} -
-\left\vert \vec{\rho}^{\;\prime}_{1}  - Q_{ab}\left(z\right)\vec{\rho}_{2} - \vec{\Omega}_{ab}\left(z\right)\right\vert^{5/3} -
+\left(\left\vert \vec{\rho}_{1}  - Q_{ab}\left(z\right)\vec{\rho}_{2} + \vec{\Omega}_{ab}\left(z\right)\right\vert^{5/3} -
+\left\vert \vec{\rho}^{\;\prime}_{1}  - Q_{ab}\left(z\right)\vec{\rho}_{2} + \vec{\Omega}_{ab}\left(z\right)\right\vert^{5/3} -
 \right. \\
 & \quad\quad\quad\quad\quad\quad
 \left.
-\left\vert \vec{\rho}_{1}  - Q_{ab}\left(z\right)\vec{\rho}^{\;\prime}_{2} - \vec{\Omega}_{ab}\left(z\right)\right\vert^{5/3} + 
-\left\vert \vec{\rho}^{\;\prime}_{1}  - Q_{ab}\left(z\right)\vec{\rho}^{\;\prime}_{2} - \vec{\Omega}_{ab}\left(z\right)\right\vert^{5/3}\right)
+\left\vert \vec{\rho}_{1}  - Q_{ab}\left(z\right)\vec{\rho}^{\;\prime}_{2} + \vec{\Omega}_{ab}\left(z\right)\right\vert^{5/3} + 
+\left\vert \vec{\rho}^{\;\prime}_{1}  - Q_{ab}\left(z\right)\vec{\rho}^{\;\prime}_{2} + \vec{\Omega}_{ab}\left(z\right)\right\vert^{5/3}\right)
 \end{aligned}
 \end{equation}
 

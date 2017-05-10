@@ -1,0 +1,100 @@
+\def\vrhoone{\vec{\rho_1}}
+\def\vrhotwo{\vec{\rho_2}}
+>
+\section{Conflicts Between Math and Code}
+\label{app:issues}
+
+The following issues have been identified arising from conflicts between the 
+mathematical equations presented in this report, those presented in 
+\cite{Tyler:1994c}, and those in the Arroyo code base. 
+
+\subsection{Covariance Between Tilt and Piston-Removed Phase}
+
+The anisoplanatic structure function includes 36 phase covariance terms as 
+shown in Equation \ref{strfn_x}, several of which include the cross-covariance 
+between a piston-removed phase and a tilt. The general form of these terms is 
+given in Equation \ref{eqn:tprphase_n7}. The terms in this equation replicate 
+those from \cite{Tyler:1994c} and are the seventh and eighth terms of Equation 
+A30 in that paper. For computational purposes, this equation is translated into 
+Equation \ref{crosscovariance} and code implementations of 
+$\mathcal{G}_{ab}$, $\mathcal{H}_{ab}$, and $\mathcal{I}_{ab}$ are provided in 
+Arroyo$'$ \texttt{refractive\_atmosphere.cpp} code. 
+
+Discrepencies have been found between the equations in both papers and the code 
+implementation and are described in below in detail.
+
+\subsubsection{Error in Tyler 1994, Equation A30, Eigth Term}
+The eight term of Equation A30 in \cite{Tyler:1994c} should be changed from:
+\begin{equation}
+\label{eqn:tyler94_A30_t8_orig}
+-\frac{1}{\pi^2} \int\int d\vrhoone' d\vrhotwo' W(\vrhoone') W(\vrhotwo')
+(\vrhotwo \cdot \vrhotwo') | \vrhoone' - Q \vrhotwo + \vec{\Omega} |^{5/3}
+\end{equation}
+to
+\begin{equation}
+\label{eqn:tyler94_A30_t8_new}
+-\frac{1}{\pi^2} \int\int d\vrhoone' d\vrhotwo' W(\vrhoone') W(\vrhotwo')
+(\vrhotwo \cdot \vrhotwo') | \vrhoone' - Q \vrhotwo\textcolor{red}{'} + \vec{\Omega} |^{5/3}.
+\end{equation}
+
+\subsubsection{Error in code for $\mathcal{G}_{ab}$}
+The equations have been compared between this report and \cite{Tyler:1994c} 
+for Equation \ref{caliph_G} and Equation \ref{caliph_H}. First, note that 
+Equation \ref{crosscovariance} has the incorrect sign for the $\mathcal{G}_{ab}$ term. 
+The equation for $\mathcal{G}_{ab}$ in this report includes the following
+term inside the integral over $z$,
+\begin{equation}
+\label{eqn:caliph_G_zint_term}
+Q_{ab}(z)^{2/3} \hat{G} \left( \left| \frac{\vrhoone + \vec{\Omega}_{ab}(z)}
+{Q_{ab}(z)} \right| \right),
+\end{equation}
+however, the code contains two different functions entitled \texttt{caliph\_G()} 
+and \texttt{new\_caliph\_G()}. The function with the correct equation is
+\texttt{new\_caliph\_G()} and is not called in \texttt{tilt\_phase\_covariance()}. The
+equation in \texttt{caliph\_G()} uses 
+\begin{equation}
+Q_{ab}(z) \hat{G} \left( \left| \vrhoone Q_{ab}(z) - \vec{\Omega} \right| \right).
+\end{equation}
+The {\bf recommendation} is to switch to using \texttt{new\_caliph\_G()} and test the 
+codes performance.
+
+\subsubsection{Errors in $\mathcal{H}_{ab}$}
+Equation \ref{caliph_H} in this report has an error where:
+\begin{equation}
+\left[\vec{\rho}_{\textcolor{red}{1}}\cdot\vec{\Omega}_{ab}\left(z\right)\right]
+\hat{G}\left(\left\vert \frac{\vec{\rho}_{\textcolor{red}{2}} + 
+\vec{\Omega}_{ab}\left(z\right)}{Q_{ab}\left(z\right)}\right\vert\right)
+\end{equation}
+should be changed to
+\begin{equation}
+\left[\vec{\rho}_{\textcolor{red}{2}}\cdot\vec{\Omega}_{ab}\left(z\right)\right]
+\hat{G}\left(\left\vert \frac{\vec{\rho}_{\textcolor{red}{1}} + 
+\vec{\Omega}_{ab}\left(z\right)}{Q_{ab}\left(z\right)}\right\vert\right)
+\end{equation}
+Equation \ref{caliph_H} is also missing a leading term of 
+\begin{equation}
+\left( \vrhotwo \cdot \vec{\Omega}(z) \right) Q(z)^{2/3}
+\end{equation}
+and should have the extra $\vec{\Omega}$ term removed. 
+Also, the $\hat{G}$ term has an incorrect argument as was the case for $\mathcal{G}_{ab}$ 
+discussed above.  There is a code implementation in \texttt{new_caliph_H()} that needs 
+to be compared against \texttt{caliph_H()} in \texttt{refractive_atmosphere.cpp}.
+
+
+\subsubsection{Code for \texttt{tilt\_phase\_covariance()}}
+Here is the equation implemented in \texttt{tilt\_phase\_covariance()}:
+\begin{equation}
+\begin{split}
+(\vrhoone \cdot \vrhotwo) & \left[ \mathcal{E}_{ab} - \mathcal{G}_{ab}(\vrhotwo) -
+\mathcal{I}_{ab}(\vrhoone) \right] \\
+& - (\vrhoone \cdot \vec{\Omega}) (\vrhotwo \cdot \vec{\Omega}) \mathcal{F}_{ab} \\
+& + \left[ (\vrhoone \cdot \vec{\Omega}) (\vrhotwo \cdot \vec{\Omega}) - 
+\left[ (\vrhoone \times \vec{\Omega}) \cdot (\vrhotwo \times \vec{\Omega}) \right] \right]
+\bar{\mathcal{F}}_{ab} 
+\\
+& + (\vrhoone \cdot \vec{\Omega}) \left[ \mathcal{H}_{ab}(\vrhotwo) - \mathcal{K}_{ab} \right] \\
+& - (\vrhotwo \cdot \vec{\Omega}) \left[ \mathcal{J}_{ab}(\vrhoone) - \mathcal{L}_{ab} \right] \\
+\end{split}
+\end{equation}
+Note that there is no definition for $\mathcal{J}_{ab}$, $\mathcal{K}_{ab}$, and 
+$\bar{\mathcal{F}}_{ab}$ in this report.
